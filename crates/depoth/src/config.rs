@@ -48,10 +48,18 @@ pub struct Config {
     pub bundles: Vec<Bundle>,
 }
 
-fn d_content() -> PathBuf { PathBuf::from("content") }
-fn d_output() -> PathBuf { PathBuf::from("dist") }
-fn d_public() -> PathBuf { PathBuf::from("public") }
-fn d_assets() -> PathBuf { PathBuf::from("assets") }
+fn d_content() -> PathBuf {
+    PathBuf::from("content")
+}
+fn d_output() -> PathBuf {
+    PathBuf::from("dist")
+}
+fn d_public() -> PathBuf {
+    PathBuf::from("public")
+}
+fn d_assets() -> PathBuf {
+    PathBuf::from("assets")
+}
 
 #[derive(Debug, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]

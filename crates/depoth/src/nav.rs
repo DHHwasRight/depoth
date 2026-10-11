@@ -91,7 +91,10 @@ pub enum NavError {
     #[error("navigation declares no children; add one of tabs, groups or pages")]
     NoChildren,
     #[error("tab {tab:?} declares {found:?}; a node carries exactly one kind of child")]
-    TabMultipleChildKinds { tab: String, found: Vec<&'static str> },
+    TabMultipleChildKinds {
+        tab: String,
+        found: Vec<&'static str>,
+    },
     #[error("tab {tab:?} has no pages and no href")]
     TabEmpty { tab: String },
     #[error("page {slug:?} appears more than once in the navigation")]
@@ -113,9 +116,15 @@ pub struct Entry {
 impl Navigation {
     fn root_kinds(&self) -> Vec<&'static str> {
         let mut found = Vec::new();
-        if self.tabs.is_some() { found.push("tabs"); }
-        if self.groups.is_some() { found.push("groups"); }
-        if self.pages.is_some() { found.push("pages"); }
+        if self.tabs.is_some() {
+            found.push("tabs");
+        }
+        if self.groups.is_some() {
+            found.push("groups");
+        }
+        if self.pages.is_some() {
+            found.push("pages");
+        }
         found
     }
 
@@ -125,13 +134,19 @@ impl Navigation {
             [] => return Err(NavError::NoChildren),
             [_] => {}
             found => {
-                return Err(NavError::MultipleChildKinds { found: found.to_vec() })
+                return Err(NavError::MultipleChildKinds {
+                    found: found.to_vec(),
+                })
             }
         }
         for tab in self.tabs.iter().flatten() {
             let mut found = Vec::new();
-            if tab.groups.is_some() { found.push("groups"); }
-            if tab.pages.is_some() { found.push("pages"); }
+            if tab.groups.is_some() {
+                found.push("groups");
+            }
+            if tab.pages.is_some() {
+                found.push("pages");
+            }
             if found.len() > 1 {
                 return Err(NavError::TabMultipleChildKinds {
                     tab: tab.tab.clone(),
@@ -139,14 +154,18 @@ impl Navigation {
                 });
             }
             if found.is_empty() && tab.href.is_none() {
-                return Err(NavError::TabEmpty { tab: tab.tab.clone() });
+                return Err(NavError::TabEmpty {
+                    tab: tab.tab.clone(),
+                });
             }
         }
         let entries = self.flatten();
         let mut seen = std::collections::HashSet::new();
         for entry in &entries {
             if !seen.insert(entry.slug.as_str()) {
-                return Err(NavError::DuplicatePage { slug: entry.slug.clone() });
+                return Err(NavError::DuplicatePage {
+                    slug: entry.slug.clone(),
+                });
             }
         }
         Ok(())
@@ -180,12 +199,7 @@ impl Navigation {
     }
 }
 
-fn walk_group(
-    group: &Group,
-    tab: &Option<String>,
-    trail: &mut Vec<String>,
-    out: &mut Vec<Entry>,
-) {
+fn walk_group(group: &Group, tab: &Option<String>, trail: &mut Vec<String>, out: &mut Vec<Entry>) {
     trail.push(group.group.clone());
     // A group's own root page comes before its children, which is the order a
     // reader meets them.
@@ -283,7 +297,10 @@ mod tests {
     #[test]
     fn a_group_root_page_comes_before_its_children() {
         let entries = nav(TABBED).flatten();
-        let start = entries.iter().position(|e| e.slug == "guide/start").unwrap();
+        let start = entries
+            .iter()
+            .position(|e| e.slug == "guide/start")
+            .unwrap();
         let first_child = entries
             .iter()
             .position(|e| e.slug == "guide/self-hosted/overview")
@@ -297,7 +314,10 @@ mod tests {
         // Last page of the Guide tab: there is a page after it in the flat
         // order, but it belongs to another tab.
         let (prev, next) = neighbours(&entries, "guide/cloud");
-        assert_eq!(prev.map(|e| e.slug.as_str()), Some("guide/self-hosted/docker"));
+        assert_eq!(
+            prev.map(|e| e.slug.as_str()),
+            Some("guide/self-hosted/docker")
+        );
         assert_eq!(next, None, "next should stop at the tab boundary");
 
         let (prev, next) = neighbours(&entries, "api/intro");
@@ -337,13 +357,23 @@ mod tests {
         "})
         .validate()
         .expect_err("should reject");
-        assert_eq!(err, NavError::DuplicatePage { slug: "setup".into() });
+        assert_eq!(
+            err,
+            NavError::DuplicatePage {
+                slug: "setup".into()
+            }
+        );
     }
 
     #[test]
     fn an_empty_tab_without_a_link_is_rejected() {
         let err = nav("tabs: [{tab: Ghost}]").validate().expect_err("reject");
-        assert_eq!(err, NavError::TabEmpty { tab: "Ghost".into() });
+        assert_eq!(
+            err,
+            NavError::TabEmpty {
+                tab: "Ghost".into()
+            }
+        );
     }
 
     #[test]
