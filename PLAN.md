@@ -43,6 +43,27 @@ delta column is what changes in Rust.
 | 12 | **Assets: `assets/` is processed and fingerprinted, `public/` is verbatim.** A leading `_` marks an input, bundled into whatever imports it and never published. | Same convention. |
 | 13 | **Syntax highlighting at build time, stylesheet opt-in.** A site with no code on it ships no CSS for code. | `syntect` + `two-face` in place of the chroma port. |
 
+### 6.2 Corrections to what was already written
+
+- **The declared MSRV was false, twice.** It said 1.74, I raised it to 1.82 to
+  satisfy clippy, and both were wrong: `oxc_parser` 0.153 declares
+  **rust-version 1.97.0** and edition 2024, and `comrak` 0.55 declares 1.85.
+  Now 1.97, which is what the tree actually requires.
+- **`serde_norway` is stale** -- no release since December 2024 and its repo
+  redirects. `yaml_serde` 0.10 has the identical `Error::location()` API and
+  is maintained by the YAML organisation. Migrate before more code depends on
+  it.
+- **Drop `gray_matter`.** Splitting `---` fences is about ten lines, and doing
+  it ourselves lets us keep the byte offset of the frontmatter block -- which
+  is the difference between "line 3 of the frontmatter" and `page.md:5`.
+- **Do not add `slug`.** It routes non-ASCII through `deunicode`, turning a
+  Japanese heading into Mandarin readings and an emoji into `rocket`, and it
+  has no collision dedupe. comrak's own `Anchorizer` is 30 lines and matches
+  GitHub.
+- **Do not add `minify-html`.** It hard-depends on `oxc_minifier` 0.95 against
+  our 0.153, so cargo would compile both oxc stacks. The payoff after brotli
+  is under 1% and on one real page it made the compressed output larger.
+
 ## 3. Traps, paid for once already
 
 Carried from the Crystal project's appendix. Each cost real time there.
@@ -220,6 +241,42 @@ checking, images, OpenAPI, frontmatter validation, HTML minification, routing
 | Colour | `anstyle` + `anstream` | 0 new | clap already pulls `anstyle`. Avoid `colored`: MPL-2.0 would be the only copyleft licence in the tree. |
 | Diagnostics | `annotate-snippets` | +4 | A span in a file with a message is the only error shape we have. rust-lang owns it and rustc is migrating onto it, so the output is already familiar. `miette` is +60 with `fancy` and earns it only once we want error codes and chained diagnostics. |
 | Test assertions | `scraper` | +17, **dev only** | See section 8. |
+| Route matching | `wayfind` | +1 | **Not `matchit`, and not axum.** Verified below. |
+| Frontmatter errors | `serde_path_to_error` + `annotate-snippets` | +5 | A dotted field path plus a caret, with no trait refactor. |
+| Search | `pagefind` (as a library) | +166 | Its `pagefind::api` module is real Rust, so no npm and no subprocess. Per-search cost is ~35 KB and flat in corpus size, where `elasticlunr` emits 18.7 MB of JSON for 500 pages and parses all of it before the first result. The 166 crates are the price; revisit if they hurt. |
+| Image dimensions | `imagesize` | +0 | Zero runtime dependencies, reads 16 bytes, prevents layout shift. It has no SVG support, which is ~20 lines of `regex` we already have. |
+| ASCII diagrams | `svgbob` | small | Pure Rust, no layout engine. Mermaid stays client-side by default. |
+
+### 6.1 Routing: `matchit` is wrong for us, verified
+
+I recommended `matchit` earlier on the grounds that axum uses it. That was
+wrong, and the failure is exactly our case:
+
+```
+matchit 0.9.2:  insert("/docs/{slug}")  ok
+                insert("/docs/{*rest}") -> Insertion failed due to conflict
+```
+
+`[slug].md` beside `[...rest].md` is the sibling pair the file convention
+produces, and Next.js resolves it by precedence. matchit refuses it outright.
+It also cannot enumerate its routes or report which pattern matched, both of
+which a generator wants for sitemaps.
+
+Measured, same pair, correct syntax for each crate:
+
+| | syntax | accepts the pair | `/docs/intro` | `/docs/a/b/c` |
+|---|---|---|---|---|
+| `matchit` 0.9.2 | `{slug}` `{*rest}` | **no** | — | — |
+| `wayfind` 1.1.2 | `<slug>` `<*rest>` | **yes** | `slug` | `rest` |
+| `path-tree` 0.8.3 | `:slug` `:rest*` | yes | `slug` | `rest` |
+
+Both survivors give Next.js precedence. Take **`wayfind`**: it reports the
+matched template and detects conflicts, where `path-tree`'s `insert` returns
+an id and silently overwrites. The risk is that wayfind is small and young, so
+keep the matcher behind our own thin interface.
+
+Speed is irrelevant here and should carry no weight: all three are 20-40 ns
+per lookup, which across a whole build is about a millisecond.
 
 Three traps recorded from the survey, each of which bites silently:
 

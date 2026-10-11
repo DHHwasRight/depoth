@@ -5,7 +5,7 @@ members = ["crates/depoth", "crates/depoth-test", "probe"]
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.97"
 
 [workspace.dependencies]
 prerender = { git = "https://github.com/DHHwasRight/prerender.git", branch = "main", version = "0.1.0" }
