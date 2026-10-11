@@ -1,0 +1,9 @@
+[package]
+name = "depoth"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+prerender.workspace = true
+rsx.workspace = true

@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = ["crates/depoth"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+
+[workspace.dependencies]
+depoth = { path = "crates/depoth", version = "0.1.0" }
+prerender = { git = "https://github.com/DHHwasRight/prerender.git", branch = "main", version = "0.1.0" }
+rsx = { git = "https://github.com/DHHwasRight/rsx.git", branch = "main", version = "0.1.0" }

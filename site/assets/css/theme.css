@@ -1,0 +1,216 @@
+/* Depoth's theme, derived from the nine supplied swatches.
+ *
+ * Each swatch is a pastel, and a pastel cannot carry text: #a0c4ff on #fffffc
+ * is 1.6:1 where body copy needs 4.5:1. So every swatch is the anchor of a
+ * ramp rather than a colour in its own right. It keeps its exact hex at the
+ * step whose lightness it already had; the rest of the ramp is generated
+ * around it in OKLCH at a fixed hue, with chroma rising into the midtones the
+ * way a usable scale does. Step 700 clears AA on the page ground for every
+ * hue, which is why the semantic text colours below all land there.
+ */
+@import "tailwindcss";
+
+@theme {
+  /* paper */
+  --color-paper-50: #fffffc;
+  --color-paper-100: #f4f4f3;
+  --color-paper-200: #e6e6e3;
+  --color-paper-300: #d3d3cf;
+  --color-paper-400: #bbbbb7;
+  --color-paper-500: #9f9f9b;
+  --color-paper-600: #82827e;
+  --color-paper-700: #656561;
+  --color-paper-800: #4a4a47;
+  --color-paper-900: #333330;
+  --color-paper-950: #1f1f1c;
+
+  /* rose */
+  --color-rose-50: #ffe9e8;
+  --color-rose-100: #ffd0cf;
+  --color-rose-200: #ffc1c0;
+  --color-rose-300: #ffadad;
+  --color-rose-400: #ec9595;
+  --color-rose-500: #d47779;
+  --color-rose-600: #bb585c;
+  --color-rose-700: #a0373f;
+  --color-rose-800: #841325;
+  --color-rose-900: #690010;
+  --color-rose-950: #4f0000;
+
+  /* peach */
+  --color-peach-50: #fff3db;
+  --color-peach-100: #ffe5b3;
+  --color-peach-200: #ffd6a5;
+  --color-peach-300: #efc38f;
+  --color-peach-400: #daac73;
+  --color-peach-500: #c19051;
+  --color-peach-600: #a67229;
+  --color-peach-700: #8b5500;
+  --color-peach-800: #6e3a00;
+  --color-peach-900: #552200;
+  --color-peach-950: #3e0b00;
+
+  /* lemon */
+  --color-lemon-50: #fdffb6;
+  --color-lemon-100: #f3f5aa;
+  --color-lemon-200: #e5e798;
+  --color-lemon-300: #d3d580;
+  --color-lemon-400: #bdbe61;
+  --color-lemon-500: #a2a238;
+  --color-lemon-600: #878500;
+  --color-lemon-700: #6b6800;
+  --color-lemon-800: #504d00;
+  --color-lemon-900: #3a3500;
+  --color-lemon-950: #262000;
+
+  /* mint */
+  --color-mint-50: #e7ffe1;
+  --color-mint-100: #caffbf;
+  --color-mint-200: #baf2af;
+  --color-mint-300: #a5e099;
+  --color-mint-400: #8bca7e;
+  --color-mint-500: #6baf5d;
+  --color-mint-600: #499439;
+  --color-mint-700: #287613;
+  --color-mint-800: #005a00;
+  --color-mint-900: #004200;
+  --color-mint-950: #002c00;
+
+  /* aqua */
+  --color-aqua-50: #daffff;
+  --color-aqua-100: #d1fcff;
+  --color-aqua-200: #9bf6ff;
+  --color-aqua-300: #80e4ee;
+  --color-aqua-400: #5ccdd8;
+  --color-aqua-500: #22b2be;
+  --color-aqua-600: #0096a3;
+  --color-aqua-700: #007887;
+  --color-aqua-800: #005b6a;
+  --color-aqua-900: #004251;
+  --color-aqua-950: #002b3a;
+
+  /* sky */
+  --color-sky-50: #eafdff;
+  --color-sky-100: #e4f7ff;
+  --color-sky-200: #c6ebff;
+  --color-sky-300: #b5daff;
+  --color-sky-400: #a0c4ff;
+  --color-sky-500: #7fa6e6;
+  --color-sky-600: #5d87cc;
+  --color-sky-700: #3a67b1;
+  --color-sky-800: #184896;
+  --color-sky-900: #002d79;
+  --color-sky-950: #00115e;
+
+  /* lilac */
+  --color-lilac-50: #fbf6ff;
+  --color-lilac-100: #f2eeff;
+  --color-lilac-200: #e5daff;
+  --color-lilac-300: #d3c8ff;
+  --color-lilac-400: #bdb2ff;
+  --color-lilac-500: #a193e7;
+  --color-lilac-600: #8474ce;
+  --color-lilac-700: #6852b4;
+  --color-lilac-800: #4e319a;
+  --color-lilac-900: #39127e;
+  --color-lilac-950: #260063;
+
+  /* orchid */
+  --color-orchid-50: #ffebff;
+  --color-orchid-100: #ffd5ff;
+  --color-orchid-200: #ffc6ff;
+  --color-orchid-300: #efb3ef;
+  --color-orchid-400: #da9ada;
+  --color-orchid-500: #c17dc2;
+  --color-orchid-600: #a75ea8;
+  --color-orchid-700: #8b3e8d;
+  --color-orchid-800: #6e2171;
+  --color-orchid-900: #550158;
+  --color-orchid-950: #3d0042;
+
+  /* Semantic roles. Everything else in the site refers to these, so a
+   * palette change is a change here and nowhere else. */
+  --color-ground:   var(--color-paper-50);
+  --color-surface:  var(--color-paper-100);
+  --color-sunken:   var(--color-paper-200);
+  --color-line:     var(--color-paper-300);
+  --color-ink:      var(--color-paper-950);
+  --color-ink-soft: var(--color-paper-700);
+  --color-accent:   var(--color-sky-700);
+  --color-accent-fill: var(--color-sky-400);
+
+
+  /* Three tiers per hue, after Starlight. A pastel can only be a fill; text
+   * on it needs a partner four shades down. -low is the supplied swatch at
+   * its own step, -base is a 1px-to-4px stroke that still reads on the page
+   * ground (>=3:1), -high is text on -low (>=4.5:1). Both ratios are checked
+   * by a test, because a palette edit silently breaks them otherwise. */
+  --color-rose-low:  var(--color-rose-300);
+  --color-rose-base: var(--color-rose-500);
+  --color-rose-high: var(--color-rose-800);
+  --color-peach-low:  var(--color-peach-200);
+  --color-peach-base: var(--color-peach-600);
+  --color-peach-high: var(--color-peach-700);
+  --color-lemon-low:  var(--color-lemon-50);
+  --color-lemon-base: var(--color-lemon-600);
+  --color-lemon-high: var(--color-lemon-700);
+  --color-mint-low:  var(--color-mint-100);
+  --color-mint-base: var(--color-mint-600);
+  --color-mint-high: var(--color-mint-700);
+  --color-aqua-low:  var(--color-aqua-200);
+  --color-aqua-base: var(--color-aqua-600);
+  --color-aqua-high: var(--color-aqua-800);
+  --color-sky-low:  var(--color-sky-400);
+  --color-sky-base: var(--color-sky-600);
+  --color-sky-high: var(--color-sky-800);
+  --color-lilac-low:  var(--color-lilac-400);
+  --color-lilac-base: var(--color-lilac-600);
+  --color-lilac-high: var(--color-lilac-800);
+  --color-orchid-low:  var(--color-orchid-200);
+  --color-orchid-base: var(--color-orchid-500);
+  --color-orchid-high: var(--color-orchid-700);
+  --color-paper-low:  var(--color-paper-50);
+  --color-paper-base: var(--color-paper-600);
+  --color-paper-high: var(--color-paper-700);
+
+  /* One hue is the accent and appears wherever interaction lives; every other
+   * hue is bound to exactly one meaning and appears nowhere else. Hugo's docs
+   * are the counter-example -- one blue doing six jobs separates nothing. */
+  --color-note:    var(--color-sky-low);
+  --color-tip:     var(--color-lilac-low);
+  --color-success: var(--color-mint-low);
+  --color-caution: var(--color-peach-low);
+  --color-danger:  var(--color-rose-low);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+
+/* The viewer's theme has three states: an explicit choice stamps the root,
+ * and the default stamps nothing, so system dark is only visible through the
+ * media query. Each role is redefined in both places or a toggle wins in one
+ * direction only. */
+@layer theme {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-ground:   var(--color-paper-950);
+      --color-surface:  var(--color-paper-900);
+      --color-sunken:   var(--color-paper-800);
+      --color-line:     var(--color-paper-800);
+      --color-ink:      var(--color-paper-100);
+      --color-ink-soft: var(--color-paper-400);
+      --color-accent:   var(--color-sky-300);
+      --color-accent-fill: var(--color-sky-800);
+    }
+  }
+  :root[data-theme="dark"] {
+    --color-ground:   var(--color-paper-950);
+    --color-surface:  var(--color-paper-900);
+    --color-sunken:   var(--color-paper-800);
+    --color-line:     var(--color-paper-800);
+    --color-ink:      var(--color-paper-100);
+    --color-ink-soft: var(--color-paper-400);
+    --color-accent:   var(--color-sky-300);
+    --color-accent-fill: var(--color-sky-800);
+  }
+}
