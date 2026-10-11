@@ -113,7 +113,7 @@ pub enum ConfigError {
     Parse {
         path: PathBuf,
         #[source]
-        source: serde_norway::Error,
+        source: yaml_serde::Error,
     },
     #[error("{0}")]
     Navigation(#[from] crate::nav::NavError),
@@ -121,11 +121,10 @@ pub enum ConfigError {
 
 impl Config {
     pub fn parse(source: &str, path: &Path) -> Result<Self, ConfigError> {
-        let config: Config =
-            serde_norway::from_str(source).map_err(|source| ConfigError::Parse {
-                path: path.to_path_buf(),
-                source,
-            })?;
+        let config: Config = yaml_serde::from_str(source).map_err(|source| ConfigError::Parse {
+            path: path.to_path_buf(),
+            source,
+        })?;
         // Fail here rather than at the first missing page, so a malformed tree
         // is one error naming the node instead of a cascade.
         config.navigation.validate()?;

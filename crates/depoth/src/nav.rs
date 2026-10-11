@@ -250,7 +250,7 @@ mod tests {
     use indoc::indoc;
 
     fn nav(src: &str) -> Navigation {
-        serde_norway::from_str(src).expect("parse")
+        yaml_serde::from_str(src).expect("parse")
     }
 
     const TABBED: &str = indoc! {"
