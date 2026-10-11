@@ -1,0 +1,12 @@
+[package]
+name = "depoth-test"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Assertions over a built site. Test support; never shipped."
+
+[dependencies]
+# html5ever's parser, with a complete CSS selector engine. Seventeen crates
+# that a site's own binary never links, bought because a harness that
+# mis-parses HTML gives false confidence rather than no confidence.
+scraper = "0.24"

@@ -207,7 +207,33 @@ target, and the components are the easy third of it.
 
 ## 6. Dependencies
 
-*Pending the crate survey.*
+Settled so far. The rest of the survey -- search, heading extraction, link
+checking, images, OpenAPI, frontmatter validation, HTML minification, routing
+-- is still outstanding.
+
+| Need | Take | Cost | Why |
+|---|---|---|---|
+| Parallel build | `rayon` | +7 | Justified by syntect, not comrak. Measured over 500 pages: comrak alone is 0.12 ms/page, so 60 ms serial and not worth threading. Syntect is 1.39 ms/page -- over 90% of render time -- and rayon takes it from 695 ms to 131 ms. Pages are not uniform (a page with eight code blocks costs ~20x one with none), so work-stealing beats static chunking by roughly 5.3x against 3-4x. |
+| File watching | `notify-debouncer-full` | +2 over notify | `full` correlates rename From/To into one event, which is the cure for the write-rename-replace dance vim and JetBrains do. Depend on the debouncer only and use its `notify` re-export, so version skew is impossible. |
+| Dev server | hand-written on `tiny_http` + SSE | +4 | About 100 lines, behind a feature flag. SSE over WebSocket because the browser reconnects on its own, which is what you want when the dev server restarts. `axum` + `tower-http` + `tower-livereload` is the better long-term answer at +35 crates -- still only a fifth of what oxc and lightningcss already cost -- so this is reversible, not a one-way door. |
+| Progress | `indicatif` | small | Hides itself when piped, so CI needs no flag. Its `rayon` feature composes with the build above. |
+| Colour | `anstyle` + `anstream` | 0 new | clap already pulls `anstyle`. Avoid `colored`: MPL-2.0 would be the only copyleft licence in the tree. |
+| Diagnostics | `annotate-snippets` | +4 | A span in a file with a message is the only error shape we have. rust-lang owns it and rustc is migrating onto it, so the output is already familiar. `miette` is +60 with `fancy` and earns it only once we want error codes and chained diagnostics. |
+| Test assertions | `scraper` | +17, **dev only** | See section 8. |
+
+Three traps recorded from the survey, each of which bites silently:
+
+1. **`tiny_http` buffers SSE into oblivion.** Its chunked encoder uses an 8 KiB
+   buffer with no flush, so 14-byte reload frames never leave the process.
+   `Request::into_writer()` and write the response by hand.
+2. **Never watch the output directory.** Watch an explicit input set. Better
+   still, follow Zola and render into memory in dev, so there is no output to
+   loop on.
+3. **comrak's AST is `!Send`.** Not merely `!Sync` -- it can never cross a
+   thread boundary at all. Keep parse and render inside one closure and return
+   a `String`. `Options` and the syntect adapter are both `Sync`; build one and
+   share it. Do not use `thread_local!` for `SyntaxSet`: it defeats the
+   `OnceLock` sharing that makes it cheap.
 
 ## 7. The documentation site
 
