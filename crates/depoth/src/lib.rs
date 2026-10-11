@@ -1,1 +1,9 @@
-//! Placeholder: the crate is laid out before the design is settled.
+//! Depoth: a static content framework.
+//!
+//! Templates compile; content does not. There is no backend.
+
+pub mod config;
+pub mod nav;
+
+pub use config::{Config, Mode};
+pub use nav::Navigation;

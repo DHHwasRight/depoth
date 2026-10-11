@@ -152,8 +152,25 @@ contain groups, but never both at once. That rule is why a 489-page site is a
 readable 1,100-line file and why the navigation can be validated rather than
 merely parsed.
 
-Ship five node shapes and stop: groups, tabs, anchors, global anchors, and an
-external `href`. The real corpus uses exactly those.
+Ship three concepts and stop: **tabs, groups (recursive), and pages**, plus
+global anchors for the handful of external links. The 489-page corpus uses
+exactly `tabs -> groups -> nested groups -> page strings`, four global anchors
+and one external-href tab. Versions and languages are a partition over file
+paths plus a dropdown; add them when someone asks.
+
+**A build-order constraint falls out of this.** Navigation lists slugs only —
+every title comes from the page's own frontmatter, so a title is never
+restated in two places. That means the sidebar cannot be built until all
+content is loaded. Order the build: discover content, load frontmatter,
+resolve navigation, then render.
+
+Frontmatter obeys the same long tail as the components. Across 489 production
+pages: `title` 487, `description` 260, `openapi` 184, `authMethod` 184,
+`openapi-schema` 39, `keywords` 8, `sidebarTitle` 6, `mode` 1. Seven keys
+carry a real site.
+
+Four callouts, not six: `Note`, `Info`, `Tip`, `Warning`. `Check`, `Danger`
+and the generic `Callout` have zero uses across the corpus.
 
 ### 5.3 The highest-leverage feature, and it is cheap
 
@@ -172,6 +189,9 @@ whole bundle. Neither Hugo nor Astro gives you any of it.
 - **The interactive playground.** It needs a server to proxy requests, and we
   do not have one. Degrade to a copyable endpoint.
 - **Hosted search.** See §4.3.
+- **Browser-evaluated interpolation.** Mintlify's MDX expressions are
+  evaluated in the browser, so `{myVar}` never appears in the initial HTML, in
+  a markdown export, or to a crawler. Interpolate at build time or not at all.
 - **Mintlify's slugging and fence meta.** Anchor ids that keep `'`, `/` and
   `&`, and fences whose title is bare words before the options, break every
   standard Markdown tool. Use GitHub-compatible slugs and `title="..."`, with a
