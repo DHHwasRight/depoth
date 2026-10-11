@@ -30,7 +30,7 @@ delta column is what changes in Rust.
 | # | Decision | Delta here |
 |---|---|---|
 | 1 | **Compile templates, do not interpret them.** An interpreter is a second, weaker implementation of a compiler that already exists. | Free. rsx compiles `.rsx` into the binary. |
-| 2 | **Two build graphs on two clocks.** A template edit pays a compile; a content edit re-runs the already-built binary. Measured there: 2.0 s against 23 ms. | Same shape, worse constant. See §4.1. |
+| 2 | **Two build graphs on two clocks.** A template edit pays a compile; a content edit re-runs the already-built binary. Measured there: 2.0 s against 23 ms. | Measured here: **0.5 s**. See §4.1. |
 | 3 | **File-based routes, content decoupled from them.** Hugo's lookup order is powerful and unpredictable; you cannot answer "which template rendered this page?" without a debug flag. | Port `page_router`'s conventions; match with `matchit`. |
 | 4 | **The type is the schema.** Generating structs from a schema file is circular: reading the schema means compiling it, and its output is what needs compiling. | Better here. A derive plus serde gives coercion and messages for free. |
 | 5 | **Dynamic routes without `getStaticPaths`.** A page declares the collection type as its parameter; the paths are a consequence of the type, so there is no second declaration to keep in step. | Same. |
@@ -65,17 +65,32 @@ Carried from the Crystal project's appendix. Each cost real time there.
 
 ## 4. Open questions
 
-### 4.1 Does the two-clock design survive Rust's compiler?
+### 4.1 Does the two-clock design survive Rust's compiler? — **yes, measured**
 
-ADR-2's whole value is that a content author never waits for a compiler. In
-Crystal a template edit cost 2.0 s. An incremental Rust rebuild of a site
-crate is plausibly 2–10 s, and if it lands at the top of that range the
-template clock stops being usable interactively.
+ADR-2's whole value is that a content author never waits for a compiler. The
+Crystal project made a template edit cost 2.0 s, and the fear was that Rust
+would be several times worse and take the template clock out of interactive
+range.
 
-Measure before designing around it. If it is too slow, the fallbacks are, in
-order of preference: split the site crate so templates live in a small leaf;
-`cargo watch` with a warm `target/`; or accept it and make the content clock
-excellent, since that is where authors spend their day.
+Measured with `probe/` — thirteen templates, a layout, control flow, a
+component call — on a warm `target/`:
+
+| | |
+|---|---|
+| Cold build, every dependency | 21.3 s |
+| **Template edit, rebuild** | **0.50 s** |
+| No-op rebuild | 0.36 s |
+| Re-run the built binary | 0.16 s |
+| Release build | 49.0 s |
+
+A template edit is **four times faster than Crystal's**, because the heavy
+dependencies — comrak, oxc, syntect — are compiled once and the leaf crate is
+all that recompiles. No fallback is needed and the design stands as written.
+
+Two honest caveats. This is a thirteen-template probe, and codegen scales with
+template count, so re-measure at the size of the real doc site. And the release
+build is 49 s, which is a deploy cost rather than an authoring one, but it
+means `--release` must never be the default for `dev`.
 
 ### 4.2 How does a document call a typed component?
 
@@ -109,7 +124,66 @@ scope at all; it may be a separate crate that emits markdown.
 
 ## 5. Component library
 
-*Pending the Mintlify survey.*
+Measured over a real 489-page Mintlify corpus, usage is extremely top-heavy.
+Seven components carry almost all of it, and everything else is a long tail.
+
+| Tier | Components | Why |
+|---|---|---|
+| **Ship first** | `Frame`, `Tabs`/`Tab`, callouts (`Note` `Info` `Tip` `Warning`), `CodeGroup`, `Card`/`CardGroup`, `Accordion`/`AccordionGroup`, `Steps`/`Step` | 348, 235, 435, 170, 182 and 119 uses respectively |
+| **Ship next** | `Tooltip`, `Update`, `ParamField`, `ResponseField`, `Expandable`, `Badge` | Real but concentrated: `Update` is 50 uses on one changelog page |
+| **Skip** | `Icon`, `Check`, `Danger`, `Panel`, `Visibility`, `products`, `menu`, `dropdowns` | Zero uses in the corpus; `Visibility` is pseudo-security by its own admission |
+
+### 5.1 The one hard problem
+
+`Tabs` and `CodeGroup` build their tab strip by **reading their children's
+titles**. Most template engines cannot introspect a block — rsx hands a
+component `children: Element`, which is opaque markup by the time it arrives.
+The Astro port solved it with HTML-comment sentinels and a regex split. Decide
+this deliberately before writing the container components; a real slot
+mechanism in rsx would make the problem disappear, and that is a change to
+rsx, not a workaround here.
+
+### 5.2 Navigation is data, declared once
+
+One tree, outside the content, yielding the sidebar, the tab bar, breadcrumbs,
+prev/next, search ordering and the API page set. Mintlify's rule is worth
+copying exactly: **one child type per level** — a tab may contain anchors which
+contain groups, but never both at once. That rule is why a 489-page site is a
+readable 1,100-line file and why the navigation can be validated rather than
+merely parsed.
+
+Ship five node shapes and stop: groups, tabs, anchors, global anchors, and an
+external `href`. The real corpus uses exactly those.
+
+### 5.3 The highest-leverage feature, and it is cheap
+
+Serve every page's Markdown source at `<url>.md`, honour
+`Accept: text/markdown`, generate `llms.txt` from the navigation tree, and
+emit a `Link:` discovery header. "Copy page", "Open in ChatGPT" and "Open in
+Claude" are then three URLs built on that one route. Roughly a week for the
+whole bundle. Neither Hugo nor Astro gives you any of it.
+
+### 5.4 Not building
+
+- **An 18-language code-sample generator.** Eighteen codegen backends is a
+  permanent tax where every bug is "the Kotlin sample for my multipart endpoint
+  is wrong". Borrow `httpsnippet` through its HAR seam, honour `x-codeSamples`,
+  move on.
+- **The interactive playground.** It needs a server to proxy requests, and we
+  do not have one. Degrade to a copyable endpoint.
+- **Hosted search.** See §4.3.
+- **Mintlify's slugging and fence meta.** Anchor ids that keep `'`, `/` and
+  `&`, and fences whose title is bare words before the options, break every
+  standard Markdown tool. Use GitHub-compatible slugs and `title="..."`, with a
+  compatibility flag for migrations.
+
+### 5.5 Scope, measured
+
+A complete Mintlify-compatible layer over unmodified MDX, for a real 489-page
+site, came to **~4,500 lines**: 1,100 for 24 components, 1,200 for the layout
+shell, 600 for a static OpenAPI reference, 240 for navigation resolution, 200
+for compatibility plugins, 333 for styling. That is the honest size of the
+target, and the components are the easy third of it.
 
 ## 6. Dependencies
 

@@ -1,0 +1,24 @@
+[tools]
+# Must match the toolchain rsx's proc-macro artifacts were built with: they
+# are not compatible across patch releases, and two rustc on PATH compile the
+# host and target halves differently.
+rust = "1.98"
+
+[tasks.build]
+description = "Build the workspace"
+run = "cargo build --workspace"
+
+[tasks.test]
+description = "Run every test"
+run = "cargo test --workspace"
+
+[tasks.lint]
+description = "Clippy over all targets"
+run = "cargo clippy --all-targets -- -D warnings"
+
+[tasks.fmt]
+run = "cargo fmt --all"
+
+[tasks.ci]
+description = "Build, lint and test"
+depends = ["build", "lint", "test"]
