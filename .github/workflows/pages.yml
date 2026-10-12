@@ -130,10 +130,21 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
+
+      # A second build with no base path, for the browser suite. That suite
+      # serves the directory at the root of a localhost port, so a site whose
+      # every URL begins /depoth would 404 on its own stylesheet and every
+      # assertion about layout or colour would pass or fail for the wrong
+      # reason. The Rust harness checks the deployed build; this one checks
+      # how it looks.
+      - name: Build again for the browser suite
+        env:
+          DEPOTH_BASE: ""
+        run: cargo run --release -p depoth-site -- build --no-partials --out site/dist-local
       - uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: site/dist
+          name: dist-local
+          path: site/dist-local
           retention-days: 1
 
   # Layout at a breakpoint, a visible focus ring, a theme that actually
@@ -155,7 +166,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-local
           path: site/dist
 
       # Browsers are ~400MB; the version is pinned by package-lock, so the key

@@ -72,29 +72,45 @@
  * draws the group's hairline — so a group needs exactly one token, and the
  * mix to `transparent` keeps the glow correct on a dark ground as well as a
  * light one.
+ *
+ * `--glow-ink` is the same hue at text weight, for the card title on hover.
+ * It is the `-high` step rather than `-base`: `-base` is sized for a stroke
+ * and clears 3:1 on the ground, where text needs 4.5:1. A title that turned
+ * blue while its shadow glowed green named two different things at once.
  */
 .g-mint {
   --glow-a: color-mix(in oklab, var(--color-mint-base) 20%, transparent);
   --glow-b: color-mix(in oklab, var(--color-mint-base) 34%, transparent);
+  --glow-ink: var(--color-mint-high);
 }
 
 .g-lilac {
   --glow-a: color-mix(in oklab, var(--color-lilac-base) 20%, transparent);
   --glow-b: color-mix(in oklab, var(--color-lilac-base) 34%, transparent);
+  --glow-ink: var(--color-lilac-high);
 }
 
 .g-peach {
   --glow-a: color-mix(in oklab, var(--color-peach-base) 20%, transparent);
   --glow-b: color-mix(in oklab, var(--color-peach-base) 34%, transparent);
+  --glow-ink: var(--color-peach-high);
 }
 
 .g-orchid {
   --glow-a: color-mix(in oklab, var(--color-orchid-base) 20%, transparent);
   --glow-b: color-mix(in oklab, var(--color-orchid-base) 34%, transparent);
+  --glow-ink: var(--color-orchid-high);
 }
 
 .doc-card {
   transition: box-shadow 160ms ease;
+}
+
+/* The title follows its own group, not the page accent. */
+.doc-card:hover .doc-card__title,
+.doc-card:focus-visible .doc-card__title {
+  /* Falls back to the page accent for any card outside a group. */
+  color: var(--glow-ink, var(--color-accent));
 }
 
 .doc-card:hover,

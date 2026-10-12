@@ -372,7 +372,7 @@ pub fn DocsGroup(group: &Group) -> Element {
 pub fn DocsCard(entry: &Entry) -> Element {
     <a href={entry.url}
        class="doc-card group block rounded-[6px] border border-line bg-ground p-4 no-underline">
-        <span class="block text-[16px] leading-6 font-semibold text-ink group-hover:text-accent">
+        <span class="doc-card__title block text-[16px] leading-6 font-semibold text-ink transition-colors">
             {entry.title}
         </span>
         <span class="mt-1 block text-[14px] leading-5 font-normal text-ink-soft">
