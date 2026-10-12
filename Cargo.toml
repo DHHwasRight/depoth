@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/depoth", "crates/depoth-test", "site", "probe"]
+members = ["crates/depoth", "crates/depoth-cli", "crates/depoth-test", "site", "probe"]
 
 [workspace.package]
 version = "0.1.0"

@@ -15,5 +15,18 @@ comrak = { version = "0.55", default-features = false }
 syntect = { version = "5", default-features = false, features = ["default-fancy"] }
 two-face = { version = "0.5", default-features = false, features = ["syntect-fancy"] }
 
+rayon = "1"
+imagesize = "0.15"
+camino = "1"
+wayfind = "1"
+walkdir = "2"
+sha2 = "0.10"
+notify-debouncer-full = { version = "0.7", optional = true }
+tiny_http = { version = "0.12", optional = true }
+
+[features]
+default = []
+dev-server = ["dep:notify-debouncer-full", "dep:tiny_http"]
+
 [dev-dependencies]
 indoc = "2"
