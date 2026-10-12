@@ -1,0 +1,62 @@
+name: Documentation
+
+# The site is the end-to-end test, so this builds it and runs the harness
+# against the artefact it is about to publish rather than a different one.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # GitHub Pages serves a project site under /<repo>/, not at the root.
+      DEPOTH_BASE: /depoth
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinned, because rsx's proc-macro artifacts are not compatible across
+      # patch releases and a mismatch fails with an error that names the wrong
+      # crate.
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.98"
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build the stylesheet
+        working-directory: site
+        run: npm install && npm run css
+
+      - name: Build the site
+        run: cargo run --release -p depoth-site -- build --no-partials --out site/dist
+
+      - name: Check the built site
+        run: cargo test -p depoth-test
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
