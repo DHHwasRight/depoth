@@ -56,6 +56,7 @@ fn main() -> ExitCode {
     let entries = Rc::new(entries);
 
     let mut binary: Vec<depoth::images::Asset> = Vec::new();
+    let public = root.join("public");
     let mut site = prerender::Site::new()
         // Only the bundled stylesheet is published. Everything else under
         // assets/css is an input -- the theme, the two component sheets, the
@@ -65,7 +66,6 @@ fn main() -> ExitCode {
             "/assets/css/site.css",
             read(&root.join("assets/css/site.css")),
         )
-        .static_dir(root.join("public"))
         // GitHub Pages runs Jekyll unless told otherwise, and Jekyll drops
         // every path beginning with an underscore. Nothing here starts with
         // one today, which is exactly why this is easy to forget later.
@@ -75,6 +75,13 @@ fn main() -> ExitCode {
             "/robots.txt",
             feeds::robots(&config.base_url, "/sitemap.xml"),
         );
+
+    // Verbatim files, if there are any. An absent optional directory is not
+    // an error -- and git does not track an empty one, so a fresh clone has
+    // no `public/` at all once its last file is generated instead.
+    if public.is_dir() {
+        site = site.static_dir(&public);
+    }
 
     // A sitemap of relative URLs is invalid rather than degraded, so it is
     // omitted entirely when there is no origin to resolve against.
