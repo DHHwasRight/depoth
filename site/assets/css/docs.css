@@ -29,8 +29,9 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--color-ink);
+  /* No transition. The link must be on screen on the frame the focus lands,
+   * not a fifth of a second later. */
   transform: translateY(calc(-100% - 16px));
-  transition: transform 0.15s ease;
 }
 
 .docs-skip:focus {
@@ -66,6 +67,14 @@
 
 /* --------------------------------------------------------- the left column */
 
+/* How wide the sheet is below `lg`. The scrim starts where the sheet ends,
+ * so a press anywhere on the scrim reaches the scrim: a scrim that spanned
+ * the sheet as well would be covered by it over most of its own area, and
+ * the press would land on the navigation instead of closing it. */
+.docs-page {
+  --docs-sheet: min(320px, 86vw);
+}
+
 .docs-sidebar {
   background: var(--color-ground);
 }
@@ -88,7 +97,7 @@
     position: fixed;
     inset: 112px auto 0 0;
     z-index: 45;
-    width: min(320px, 86vw);
+    width: var(--docs-sheet);
     overflow-y: auto;
     overscroll-behavior: contain;
     border-right: 1px solid var(--color-line);
@@ -100,6 +109,10 @@
   :root[data-nav="open"] .docs-sidebar {
     transform: none;
     visibility: visible;
+  }
+
+  .docs-scrim {
+    left: var(--docs-sheet);
   }
 
   :root[data-nav="open"] .docs-scrim {
@@ -488,12 +501,14 @@
 
 /* ---------------------------------------------------------------- motion */
 
-html {
+/* Scoped to this layout rather than set on `html` outright: another file owns
+ * the landing page, and a global rule from here would reach it. */
+html:has(.docs-page) {
   scroll-behavior: smooth;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html:has(.docs-page) {
     scroll-behavior: auto;
   }
 

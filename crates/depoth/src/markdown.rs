@@ -291,3 +291,98 @@ mod tests {
         assert!(r.html.contains("<del>"), "{}", r.html);
     }
 }
+
+/// Prefixes every root-relative `href` and `src` with `base`.
+///
+/// A document writes `/docs/navigation` because that is what the page is
+/// called. Where the site is deployed is not the author's problem, and making
+/// it theirs means every link breaks the day the site moves.
+///
+/// Left alone: anything with a scheme, a protocol-relative `//host`, a bare
+/// fragment or query, and anything already carrying the prefix.
+pub fn rebase(html: &str, base: &str) -> String {
+    if base.is_empty() {
+        return html.to_string();
+    }
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(at) = rest.find(['h', 's']).and_then(|_| find_attr(rest)) {
+        let (before, from) = rest.split_at(at.start);
+        out.push_str(before);
+        let value = &from[at.open..at.close];
+        out.push_str(&from[..at.open]);
+        if value.starts_with('/') && !value.starts_with("//") && !value.starts_with(base) {
+            out.push_str(base);
+        }
+        out.push_str(value);
+        rest = &from[at.close..];
+    }
+    out.push_str(rest);
+    out
+}
+
+struct Attr {
+    start: usize,
+    open: usize,
+    close: usize,
+}
+
+/// Locates the next `href="` or `src="` and the bounds of its value.
+fn find_attr(haystack: &str) -> Option<Attr> {
+    let mut search = 0;
+    loop {
+        let rel = haystack[search..].find(['h', 's'])?;
+        let start = search + rel;
+        for name in ["href=\"", "src=\""] {
+            if haystack[start..].starts_with(name) {
+                let open = name.len();
+                let close = open + haystack[start + open..].find('"')?;
+                return Some(Attr { start, open, close });
+            }
+        }
+        search = start + 1;
+    }
+}
+
+#[cfg(test)]
+mod rebase_tests {
+    use super::rebase;
+
+    #[test]
+    fn root_relative_links_gain_the_prefix() {
+        let html = r#"<a href="/docs/nav">x</a><img src="/img/a.png">"#;
+        assert_eq!(
+            rebase(html, "/depoth"),
+            r#"<a href="/depoth/docs/nav">x</a><img src="/depoth/img/a.png">"#
+        );
+    }
+
+    #[test]
+    fn everything_else_is_left_alone() {
+        for html in [
+            r#"<a href="https://example.com/x">x</a>"#,
+            r#"<a href="//cdn.example.com/x">x</a>"#,
+            r##"<a href="#section">x</a>"##,
+            r#"<a href="relative/page">x</a>"#,
+            r#"<a href="mailto:a@b.c">x</a>"#,
+        ] {
+            assert_eq!(rebase(html, "/depoth"), html, "changed {html}");
+        }
+    }
+
+    #[test]
+    fn an_empty_base_changes_nothing_and_a_prefixed_link_is_not_doubled() {
+        let html = r#"<a href="/docs/nav">x</a>"#;
+        assert_eq!(rebase(html, ""), html);
+        assert_eq!(
+            rebase(r#"<a href="/depoth/docs">x</a>"#, "/depoth"),
+            r#"<a href="/depoth/docs">x</a>"#
+        );
+    }
+
+    #[test]
+    fn text_that_merely_contains_h_or_s_survives() {
+        let html = "<p>she has hats</p>";
+        assert_eq!(rebase(html, "/depoth"), html);
+    }
+}

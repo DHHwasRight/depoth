@@ -234,3 +234,50 @@ fn titles_group_by_value_so_a_stamped_template_shows_up() {
     let titles = site.titles();
     assert_eq!(titles["Depoth"], ["/", "/a"], "both pages share one title");
 }
+
+#[test]
+fn a_base_path_is_stripped_before_lookup() {
+    // The site ships under a sub-path on GitHub Pages, so its links carry one
+    // and its files do not. Checking the wrong one of those is how a publish
+    // mode quietly stops being tested.
+    let root = build(
+        "based",
+        &[
+            (
+                "index.html",
+                &page("Home", "<a href=\"/depoth/docs/\">Docs</a>"),
+            ),
+            (
+                "docs/index.html",
+                &page("Docs", "<a href=\"/depoth/\">Home</a>"),
+            ),
+        ],
+    );
+    let policy = Policy {
+        base: "/depoth".into(),
+        ..Policy::default()
+    };
+    assert_eq!(findings(&root, &policy), Vec::<String>::new());
+}
+
+#[test]
+fn an_absolute_link_missing_the_base_path_is_found() {
+    // Without this the rule above would pass by doing nothing, which is how
+    // the first version of it shipped.
+    let root = build(
+        "unbased",
+        &[
+            ("index.html", &page("Home", "<a href=\"/docs/\">Docs</a>")),
+            ("docs/index.html", &page("Docs", "")),
+        ],
+    );
+    let policy = Policy {
+        base: "/depoth".into(),
+        ..Policy::default()
+    };
+    let found = findings(&root, &policy);
+    assert!(
+        found.iter().any(|f| f.contains("omits the base path")),
+        "a link without the prefix must be reported, got {found:?}"
+    );
+}

@@ -15,7 +15,10 @@ pub struct Heading {
 pub struct Doc {
     /// URL path, e.g. `/docs/install`.
     pub url: String,
-    /// Slug as written in the navigation, e.g. `docs/install`.
+    /// Slug as written in the navigation, e.g. `docs/install`. Kept because
+    /// it is the key the navigation names a page by, which is what any future
+    /// cross-reference would resolve against.
+    #[allow(dead_code)]
     pub slug: String,
     pub title: String,
     pub description: Option<String>,

@@ -245,6 +245,29 @@ impl Site {
             let Some(url) = self.resolve(&page.route, &raw) else {
                 continue;
             };
+            // A deployed sub-path is part of the URL and not of the file tree,
+            // so it comes off before anything is looked up. An absolute link
+            // that is missing it is a finding: on the host it would leave the
+            // site.
+            let url = if policy.base.is_empty() {
+                url
+            } else if let Some(rest) = url.strip_prefix(&policy.base) {
+                if rest.is_empty() {
+                    "/".to_string()
+                } else {
+                    rest.to_string()
+                }
+            } else {
+                out.push(self.finding(
+                    page,
+                    rule,
+                    format!(
+                        "{raw:?} is absolute but omits the base path {:?}",
+                        policy.base
+                    ),
+                ));
+                continue;
+            };
             if policy.ignore_links.iter().any(|p| url.starts_with(p)) {
                 continue;
             }
