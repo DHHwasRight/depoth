@@ -1,0 +1,39 @@
+name: Depoth
+description: A static content framework in Rust. Templates compile; content does not.
+base_url: https://dhhwasright.github.io/depoth
+
+content_dir: content
+output_dir: dist
+assets_dir: assets
+public_dir: public
+
+navigation:
+  anchors:
+    - anchor: Source
+      href: https://github.com/DHHwasRight/depoth
+      icon: github
+    - anchor: rsx
+      href: https://github.com/DHHwasRight/rsx
+    - anchor: prerender
+      href: https://github.com/DHHwasRight/prerender
+  tabs:
+    - tab: Documentation
+      groups:
+        - group: Getting started
+          pages:
+            - docs
+            - docs/install
+            - docs/configuration
+        - group: Writing
+          pages:
+            - docs/content
+            - docs/navigation
+            - docs/layouts
+        - group: Shipping
+          pages:
+            - docs/partial-navigation
+            - docs/testing
+            - docs/deploying
+        - group: Background
+          pages:
+            - docs/design-notes

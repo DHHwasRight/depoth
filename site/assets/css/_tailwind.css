@@ -1,0 +1,36 @@
+/* The input of the CSS build. Never publish this file.
+ *
+ * The leading underscore is this project's mark for an input: a file that is
+ * bundled into another file and that the pipeline must not copy into dist/.
+ * The build reads this file and writes assets/css/site.css:
+ *
+ *     npm run css          # once, minified
+ *     npm run css:watch    # again on each change
+ *
+ * theme.css starts with `@import "tailwindcss";`, so that import comes in
+ * through the first line below. Keep the @import rules at the top: CSS makes
+ * an @import after a rule invalid.
+ */
+
+@import "./theme.css";
+@import "./docs.css";
+@import "./landing.css";
+
+/* Where the class names are.
+ *
+ * Tailwind resolves each path against this stylesheet, and it keeps its
+ * automatic detection on as well. The automatic pass starts at the directory
+ * the CLI runs in (the site root, see scripts/build-css.sh) and it obeys
+ * .gitignore. The globs below are explicit for two reasons: .rsx is not an
+ * extension Tailwind knows, and an explicit glob states the contract.
+ */
+
+/* The templates. A .rsx file is a Rust file with an HTML-shaped body. */
+@source "../../src/views/**/*.rsx";
+
+/* Plain Rust can also hold a class name, for example in a route table or in
+ * a helper that builds a class string. */
+@source "../../src/**/*.rs";
+
+/* The prose. Markdown can carry raw HTML with classes on it. */
+@source "../../content/**/*.md";

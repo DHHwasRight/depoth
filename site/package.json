@@ -1,0 +1,16 @@
+{
+  "name": "depoth-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CSS build and browser tests for the depoth documentation site.",
+  "scripts": {
+    "css": "bash scripts/build-css.sh",
+    "css:watch": "bash scripts/build-css.sh --watch",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@tailwindcss/cli": "^4.1.14"
+  }
+}

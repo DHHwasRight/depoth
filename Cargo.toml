@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/depoth", "crates/depoth-test", "probe"]
+members = ["crates/depoth", "crates/depoth-test", "site", "probe"]
 
 [workspace.package]
 version = "0.1.0"
@@ -10,4 +10,5 @@ rust-version = "1.97"
 [workspace.dependencies]
 prerender = { git = "https://github.com/DHHwasRight/prerender.git", branch = "main", version = "0.1.0" }
 rsx = { git = "https://github.com/DHHwasRight/rsx.git", branch = "main", version = "0.1.0" }
+depoth = { path = "crates/depoth", version = "0.1.0" }
 depoth-test = { path = "crates/depoth-test", version = "0.1.0" }

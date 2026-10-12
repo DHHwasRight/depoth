@@ -485,13 +485,27 @@ dependencies = [
 name = "depoth"
 version = "0.1.0"
 dependencies = [
+ "comrak",
  "indoc",
  "prerender",
  "rsx",
  "serde",
  "serde_path_to_error",
+ "syntect",
  "thiserror",
+ "two-face",
  "yaml_serde",
+]
+
+[[package]]
+name = "depoth-site"
+version = "0.1.0"
+dependencies = [
+ "depoth",
+ "prerender",
+ "rsx",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
