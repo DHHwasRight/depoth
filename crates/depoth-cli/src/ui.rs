@@ -58,6 +58,13 @@ pub const PLAIN: Style = Style::new();
 /// Always, regardless of the face: the stream strips them if it must. Width is
 /// never measured on the result -- see [`Cell`].
 pub fn paint(style: Style, text: impl Display) -> String {
+    let text = text.to_string();
+    // Painting nothing produces nothing. Without this an empty cell is two
+    // escape sequences, which is invisible but is not whitespace, so the
+    // trailing-space trim in `Table::render` would step over it.
+    if text.is_empty() {
+        return text;
+    }
     format!("{style}{text}{}", style.render_reset())
 }
 
@@ -113,9 +120,14 @@ impl Face {
 type Sink = AutoStream<Box<dyn Write>>;
 
 /// An in-memory transcript, for tests.
+///
+/// Test-only, and the reason the look is covered rather than hoped for: a
+/// `Ui` built on one of these produces the exact bytes a pipe would receive.
+#[cfg_attr(not(test), allow(dead_code))]
 #[derive(Clone, Default)]
 pub struct Transcript(Rc<RefCell<Vec<u8>>>);
 
+#[cfg_attr(not(test), allow(dead_code))]
 impl Transcript {
     pub fn text(&self) -> String {
         String::from_utf8_lossy(&self.0.borrow()).into_owned()
@@ -160,6 +172,7 @@ impl Ui {
 
     /// A `Ui` writing into memory. Both streams share one buffer, so a test
     /// reads the transcript in the order a human would have seen it.
+    #[cfg_attr(not(test), allow(dead_code))]
     pub fn capture(face: Face, quiet: bool) -> (Self, Transcript) {
         let transcript = Transcript::default();
         let choice = face.choice();
@@ -186,10 +199,6 @@ impl Ui {
     /// as a flag, and a missing one is an error naming that flag.
     pub fn interactive(&self) -> bool {
         self.face == Face::Terminal
-    }
-
-    pub fn quiet(&self) -> bool {
-        self.quiet
     }
 
     // -- the raw writes -----------------------------------------------------
@@ -263,11 +272,31 @@ impl Ui {
         }
     }
 
+    /// Output produced by a subprocess, forwarded unchanged.
+    ///
+    /// Cargo's own diagnostics come through here. They carry ANSI only when
+    /// the face is a terminal, because the face is what set `CARGO_TERM_COLOR`
+    /// on the child -- and the stream would strip them anyway if it were not.
+    pub fn verbatim(&self, text: &str) {
+        if text.is_empty() {
+            return;
+        }
+        let mut err = self.err.borrow_mut();
+        let _ = err.write_all(text.as_bytes());
+        if !text.ends_with('\n') {
+            let _ = writeln!(err);
+        }
+        let _ = err.flush();
+    }
+
     /// A diagnostic in rustc's shape. Stderr, and never suppressed: `--quiet`
     /// means "only the findings", not "no findings".
     pub fn diagnostic(&self, d: &Diagnostic) {
         let mut err = self.err.borrow_mut();
+        // A blank line after each, as rustc does: two diagnostics run together
+        // read as one with a confusing second half.
         let _ = write!(err, "{}", d.render());
+        let _ = writeln!(err);
         let _ = err.flush();
     }
 
@@ -426,12 +455,6 @@ impl Cell {
         self.parts.iter().map(|(t, _)| width_of(t)).sum()
     }
 
-    /// The plain text, with no escape sequences. What a test asserts on, and
-    /// what the width is taken from.
-    pub fn text(&self) -> String {
-        self.parts.iter().map(|(t, _)| t.as_str()).collect()
-    }
-
     fn render(&self, to: usize) -> String {
         let body: String = self
             .parts
@@ -470,11 +493,6 @@ impl Table {
         self
     }
 
-    pub fn gap(mut self, gap: usize) -> Self {
-        self.gap = gap;
-        self
-    }
-
     pub fn row(&mut self, cells: Vec<Cell>) -> &mut Self {
         self.rows.push(cells);
         self
@@ -497,9 +515,19 @@ impl Table {
                 let cells: Vec<String> = row
                     .iter()
                     .enumerate()
-                    // The final column is never padded: trailing spaces are
-                    // invisible on a terminal and noise in a diff.
-                    .map(|(i, c)| c.render(if i == last { 0 } else { widths[i] }))
+                    .map(|(i, c)| {
+                        // A left-aligned final column needs no padding, and
+                        // trailing spaces are invisible on a terminal and
+                        // noise in a diff. A right-aligned one still does:
+                        // its padding is on the left, where it is the
+                        // alignment.
+                        let to = if i == last && c.align == Align::Left {
+                            0
+                        } else {
+                            widths[i]
+                        };
+                        c.render(to)
+                    })
                     .collect();
                 format!("{pad}{}", cells.join(&gap)).trim_end().to_string()
             })
@@ -517,7 +545,7 @@ impl Table {
 /// byte range, and the subset that has a real span -- a config key, a
 /// frontmatter field -- needs the header, the arrow and a caret run. That is
 /// the fifty lines below rather than a dependency and a conversion layer.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Severity {
     Error,
     Warning,
@@ -530,7 +558,8 @@ impl Severity {
             Severity::Warning => "warning",
         }
     }
-    fn style(self) -> Style {
+    /// The colour a finding of this severity is counted in.
+    pub fn style(self) -> Style {
         match self {
             Severity::Error => BAD.bold(),
             Severity::Warning => WARN.bold(),
@@ -667,7 +696,7 @@ pub fn thousands(n: u64) -> String {
     let digits = n.to_string();
     let mut out = String::with_capacity(digits.len() + digits.len() / 3);
     for (i, c) in digits.chars().enumerate() {
-        if i > 0 && (digits.len() - i) % 3 == 0 {
+        if i > 0 && (digits.len() - i).is_multiple_of(3) {
             out.push(',');
         }
         out.push(c);
@@ -740,7 +769,9 @@ mod tests {
         ui.diagnostic(&Diagnostic::error("dead-link", "nope"));
         assert_eq!(
             transcript.text(),
-            "/docs/install\nerror[dead-link]: nope\n",
+            // The blank line after a diagnostic is rustc's, and it is part of
+            // the diagnostic rather than commentary, so --quiet keeps it.
+            "/docs/install\nerror[dead-link]: nope\n\n",
             "--quiet is 'only what was asked for and anything wrong'"
         );
     }

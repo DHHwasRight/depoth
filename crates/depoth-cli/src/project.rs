@@ -15,8 +15,6 @@ pub struct Project {
     pub root: PathBuf,
     pub config_path: PathBuf,
     pub config: Config,
-    /// The raw YAML, kept so an error can quote the line it is about.
-    pub source: String,
 }
 
 impl Project {
@@ -27,7 +25,10 @@ impl Project {
         let start = match start {
             Some(dir) => dir.to_path_buf(),
             None => std::env::current_dir().map_err(|e| {
-                vec![Diagnostic::error("cwd", format!("the current directory is unreadable: {e}"))]
+                vec![Diagnostic::error(
+                    "cwd",
+                    format!("the current directory is unreadable: {e}"),
+                )]
             })?,
         };
         let root = find_root(&start).ok_or_else(|| {
@@ -43,13 +44,14 @@ impl Project {
     /// Loads the site rooted at `root`.
     pub fn open(root: &Path) -> Result<Self, Vec<Diagnostic>> {
         let config_path = root.join(MANIFEST);
+        // Read for the error path only: a parse failure quotes the line it
+        // is about, and a success has the parsed config instead.
         let source = std::fs::read_to_string(&config_path).unwrap_or_default();
         match Config::load(&config_path) {
             Ok(config) => Ok(Self {
                 root: root.to_path_buf(),
                 config_path,
                 config,
-                source,
             }),
             Err(e) => Err(vec![config_diagnostic(&e, &config_path, &source)]),
         }

@@ -3,6 +3,7 @@ name = "depoth-cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+description = "The depoth command line."
 
 [[bin]]
 name = "depoth"
@@ -10,9 +11,22 @@ path = "src/main.rs"
 
 [dependencies]
 depoth.workspace = true
+# The check rules, surfaced by `depoth check`. depoth-test says it is never
+# shipped, and it is not: a *site's* binary never links it. The tool that runs
+# the checks is the one place it belongs, and scraper is already in the tree.
+depoth-test.workspace = true
+
 clap = { version = "4", features = ["derive"] }
+# Colour, decided once in src/ui.rs. anstyle is the vocabulary and anstream is
+# the stream that strips it when nobody is watching. Not `colored`: MPL-2.0
+# would be the only copyleft licence in the tree.
 anstyle = "1"
 anstream = "1"
+# Progress. Hides itself when piped, so CI needs no flag.
 indicatif = "0.18"
+# Prompts, for `depoth new`. Every answer it asks for is also a flag.
 inquire = "0.9"
-anyhow = "1"
+# Display width, so a wide character does not shear a column. Zero new crates:
+# indicatif already depends on it.
+unicode-width = "0.2"
+serde = { version = "1", features = ["derive"] }

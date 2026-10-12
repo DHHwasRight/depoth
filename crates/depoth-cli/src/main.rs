@@ -83,7 +83,7 @@ fn main() -> ExitCode {
     let dir = cli.global.dir.as_deref();
 
     let result = match cli.command {
-        Command::New(args) => commands::new::run(&ui, args),
+        Command::New(args) => commands::new::run(&ui, dir, args),
         Command::Build(args) => commands::build::run(&ui, dir, args),
         Command::Check(args) => commands::check::run(&ui, dir, args),
         Command::Dev(args) => commands::dev::run(&ui, dir, args),

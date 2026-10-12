@@ -605,11 +605,13 @@ version = "0.1.0"
 dependencies = [
  "anstream",
  "anstyle",
- "anyhow",
  "clap",
  "depoth",
+ "depoth-test",
  "indicatif",
  "inquire",
+ "serde",
+ "unicode-width",
 ]
 
 [[package]]
