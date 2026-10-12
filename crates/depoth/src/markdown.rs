@@ -19,6 +19,7 @@ use syntect::html::{ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::{SyntaxReference, SyntaxSet};
 use syntect::util::LinesWithEndings;
 
+use crate::components::{self, CallError, Components};
 use crate::slug::Anchors;
 
 const CLASS_STYLE: ClassStyle = ClassStyle::SpacedPrefixed { prefix: "hl-" };
@@ -147,8 +148,34 @@ pub fn highlight_stylesheet() -> String {
     )
 }
 
-/// Renders `source`, assigning heading ids and returning the outline.
+/// Renders `source` with no components registered.
 pub fn render(source: &str) -> Rendered {
+    render_with(source, &Components::new()).expect("no components, so no call can fail")
+}
+
+/// Renders `source`, expanding any component call it contains.
+///
+/// Children are rendered by calling back into this function, which is what
+/// makes a call inside a call work.
+pub fn render_with(source: &str, components: &Components) -> Result<Rendered, CallError> {
+    let expanded = expand_calls(source, components)?;
+    Ok(render_plain(&expanded))
+}
+
+fn expand_calls(source: &str, components: &Components) -> Result<String, CallError> {
+    // A child's markdown is rendered before its parent sees it, so what the
+    // component receives is HTML and not a second dialect to parse.
+    let render_children = |inner: &str| match expand_calls(inner, components) {
+        Ok(expanded) => render_plain(&expanded).html,
+        // The outer call reports it; this inner failure cannot be lost,
+        // because the same source is walked again below.
+        Err(_) => inner.to_string(),
+    };
+    components::expand(source, components, &render_children)
+}
+
+/// Renders `source`, assigning heading ids and returning the outline.
+fn render_plain(source: &str) -> Rendered {
     // comrak's AST is !Send -- it cannot cross a thread boundary at all, not
     // merely be shared across one -- so the arena is created and dropped
     // inside this function and only the String escapes.
@@ -384,5 +411,77 @@ mod rebase_tests {
     fn text_that_merely_contains_h_or_s_survives() {
         let html = "<p>she has hats</p>";
         assert_eq!(rebase(html, "/depoth"), html);
+    }
+}
+
+#[cfg(test)]
+mod component_tests {
+    use super::*;
+
+    fn components() -> Components {
+        Components::new()
+            .add("Warning", |_, c| {
+                format!("<aside class=\"callout warning\">{c}</aside>")
+            })
+            .add("Tabs", |_, c| format!("<div class=\"tabs\">{c}</div>"))
+            .add("Tab", |a, c| {
+                format!(
+                    "<section data-title=\"{}\">{c}</section>",
+                    a.get_or("title", "")
+                )
+            })
+    }
+
+    #[test]
+    fn a_callout_renders_its_children_as_markdown() {
+        let r = render_with(
+            "<Warning>\nThis **upserts**. See the [guide](/g).\n</Warning>\n",
+            &components(),
+        )
+        .expect("render");
+        assert!(
+            r.html.contains("<aside class=\"callout warning\">"),
+            "{}",
+            r.html
+        );
+        assert!(r.html.contains("<strong>upserts</strong>"), "{}", r.html);
+        assert!(r.html.contains("href=\"/g\""), "{}", r.html);
+    }
+
+    #[test]
+    fn a_fenced_block_survives_inside_a_nested_call() {
+        // Tabs holding code is the single commonest shape in real docs, and
+        // the one the previous generation could not render.
+        let src = "<Tabs>\n  <Tab title=\"Rust\">\n    ```rust\n    fn main() {}\n    ```\n  </Tab>\n</Tabs>\n";
+        let r = render_with(src, &components()).expect("render");
+        assert!(r.html.contains("<div class=\"tabs\">"), "{}", r.html);
+        assert!(r.html.contains("data-title=\"Rust\""), "{}", r.html);
+        assert!(r.html.contains("<pre"), "no code block: {}", r.html);
+        assert!(!r.html.contains("```"), "fence leaked as text: {}", r.html);
+    }
+
+    #[test]
+    fn prose_around_a_call_is_still_prose() {
+        let r = render_with(
+            "Before.\n\n<Warning>\ninside\n</Warning>\n\nAfter.\n",
+            &components(),
+        )
+        .expect("render");
+        assert!(r.html.contains("<p>Before.</p>"), "{}", r.html);
+        assert!(r.html.contains("<p>After.</p>"), "{}", r.html);
+    }
+
+    #[test]
+    fn headings_inside_a_call_still_reach_the_outline() {
+        // They do not today: the inner render has its own anchor table, so a
+        // heading inside a component is absent from the on-this-page rail.
+        // Recorded as a known limit rather than left to be discovered.
+        let r = render_with(
+            "## Outside\n\n<Warning>\n### Inside\n</Warning>\n",
+            &components(),
+        )
+        .expect("render");
+        assert_eq!(r.headings.len(), 1, "known limit: {:?}", r.headings);
+        assert_eq!(r.headings[0].text, "Outside");
     }
 }

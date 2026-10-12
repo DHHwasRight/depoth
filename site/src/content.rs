@@ -34,6 +34,11 @@ pub enum LoadError {
     Front(#[from] frontmatter::FrontError),
     #[error("{slug}: named in the navigation, but {path} does not exist")]
     Missing { slug: String, path: String },
+    #[error("{path}: {source}")]
+    Call {
+        path: String,
+        source: depoth::components::CallError,
+    },
 }
 
 /// The prefix every absolute URL carries, empty unless the site is deployed
@@ -62,7 +67,11 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
             let source = std::fs::read_to_string(&path)?;
             let split = frontmatter::split(&source);
             let front: Front = frontmatter::parse(&split, &path)?;
-            let rendered = depoth::markdown::render(split.body);
+            let rendered = depoth::markdown::render_with(split.body, &crate::mdx::components())
+                .map_err(|e| LoadError::Call {
+                    path: path.display().to_string(),
+                    source: e,
+                })?;
 
             let rel = path
                 .strip_prefix(root)

@@ -5,6 +5,7 @@
 
 mod content;
 mod data;
+mod mdx;
 mod views {
     rsx::load_dir!("src/views");
 }

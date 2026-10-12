@@ -48,6 +48,12 @@ Relative links resolve against the page's own directory.
 `Site::titles` groups pages by their `<title>`, which is how a template that
 stamped one title onto everything shows up.
 
+<Warning title="A check that cannot fail is not coverage">
+The base-path rule shipped once with its `Policy` field wired up and the code
+that used it missing, so it stored a value and did nothing. Every rule here has
+a test that plants the defect it looks for.
+</Warning>
+
 ## Why it runs in milliseconds
 
 There is no browser process, no HTTP server, no page load and no screenshot

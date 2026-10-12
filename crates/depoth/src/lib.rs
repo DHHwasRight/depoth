@@ -2,6 +2,7 @@
 //!
 //! Templates compile; content does not. There is no backend.
 
+pub mod components;
 pub mod config;
 pub mod frontmatter;
 pub mod markdown;
