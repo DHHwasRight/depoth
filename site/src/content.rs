@@ -90,6 +90,7 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
                     // The author writes /docs/navigation; where the site is
                     // deployed is not their problem.
                     html: depoth::markdown::rebase(&rendered.html, base_path()),
+                    source: source.clone(),
                     headings: rendered
                         .headings
                         .into_iter()

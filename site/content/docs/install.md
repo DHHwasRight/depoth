@@ -57,7 +57,7 @@ my-site/
   src/
     main.rs
     views/         .rsx templates, compiled into the binary
-  assets/          processed and fingerprinted
+  assets/          stylesheets and scripts
   public/          copied verbatim
 ```
 

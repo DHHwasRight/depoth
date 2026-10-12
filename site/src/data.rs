@@ -26,6 +26,8 @@ pub struct Doc {
     pub sidebar_title: Option<String>,
     /// Rendered body.
     pub html: String,
+    /// The markdown as written, published beside the page at `<url>.md`.
+    pub source: String,
     pub headings: Vec<Heading>,
 }
 

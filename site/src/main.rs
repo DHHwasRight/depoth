@@ -82,6 +82,17 @@ fn main() -> ExitCode {
         });
     }
 
+    // Every page is also published as the markdown it was written in.
+    //
+    // The cheapest high-value thing a documentation site can do: an agent or a
+    // reader that finds `<url>.md` never has to parse the HTML to recover the
+    // text, and "copy this page" becomes a link rather than a feature.
+    for entry in entries.iter() {
+        if let Some(doc) = docs.get(&entry.slug) {
+            site = site.static_file(format!("/{}.md", entry.slug), doc.source.clone());
+        }
+    }
+
     for entry in entries.iter() {
         let (c, d, e) = (Rc::clone(&config), Rc::clone(&docs), Rc::clone(&entries));
         let slug = entry.slug.clone();
@@ -122,8 +133,12 @@ fn llms_txt(
             }
         }
         if let Some(doc) = docs.get(&entry.slug) {
+            // doc.url already carries any deployment sub-path, so the origin
+            // is all that is wanted here.
             let base = config.base_url.trim_end_matches('/');
-            out.push_str(&format!("- [{}]({}{})", doc.title, base, doc.url));
+            // Point at the markdown, not the page: whatever reads this file
+            // wants the text.
+            out.push_str(&format!("- [{}]({}{}.md)", doc.title, base, doc.url));
             if let Some(description) = &doc.description {
                 out.push_str(&format!(": {description}"));
             }

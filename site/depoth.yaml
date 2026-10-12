@@ -1,6 +1,9 @@
 name: Depoth
 description: A static content framework in Rust. Templates compile; content does not.
-base_url: https://dhhwasright.github.io/depoth
+# The origin only. A deployment sub-path comes from DEPOTH_BASE at build
+# time and is already part of every page's URL, so putting it here too would
+# write it twice.
+base_url: https://dhhwasright.github.io
 
 content_dir: content
 output_dir: dist

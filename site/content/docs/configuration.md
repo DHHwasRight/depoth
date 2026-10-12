@@ -94,10 +94,18 @@ Each is a path relative to the crate root.
 | `content_dir` | `content` | Markdown documents. |
 | `output_dir` | `dist` | Where the build writes. |
 | `public_dir` | `public` | Copied verbatim, unprocessed. |
-| `assets_dir` | `assets` | Processed and fingerprinted. |
+| `assets_dir` | `assets` | Read, but not yet processed. See below. |
 
-A file whose name starts with `_` is an input. It is bundled into whatever
-imports it and is never published on its own.
+<Warning title="assets_dir is read, not processed">
+There is no asset pipeline yet. The key is parsed and a site may name a
+directory, but nothing fingerprints, minifies or bundles its contents. This
+site builds its one stylesheet with the Tailwind CLI and publishes it by hand.
+Fingerprinting, bundling and subresource integrity are planned, not present.
+</Warning>
+
+A file whose name starts with `_` is an input by convention. It is bundled into
+whatever imports it and is never published on its own. Today that convention is
+enforced by the site's own build script, not by depoth.
 
 ## navigation
 
