@@ -17,6 +17,9 @@ fn the_documentation_site_is_clean() {
     let site = Site::open(&dist).expect("open");
     let policy = Policy {
         unique: vec!["body > header".into(), "main".into()],
+        // Matches the DEPOTH_BASE the site was built with, so the artefact
+        // that ships is the artefact that is checked.
+        base: std::env::var("DEPOTH_BASE").unwrap_or_default(),
         ..Policy::default()
     };
     let findings = site.check(&policy);

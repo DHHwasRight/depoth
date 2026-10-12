@@ -109,6 +109,11 @@ pub struct Policy {
     pub allow_partial: Vec<String>,
     /// Link prefixes to leave alone, e.g. a search endpoint.
     pub ignore_links: Vec<String>,
+    /// Sub-path the site is deployed under, e.g. `/depoth` on GitHub Pages.
+    ///
+    /// Without this the harness checks a different artefact from the one that
+    /// ships, which is how a publish mode quietly stops being tested.
+    pub base: String,
 }
 
 impl Default for Policy {
@@ -117,6 +122,7 @@ impl Default for Policy {
             unique: vec!["body > header".into(), "main".into()],
             allow_partial: Vec::new(),
             ignore_links: Vec::new(),
+            base: String::new(),
         }
     }
 }
