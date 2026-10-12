@@ -101,6 +101,41 @@ impl RenderCache {
         cache
     }
 
+    /// A hit, or `None`. Use this when rendering can fail: a cache must never
+    /// store a failure, and a closure that cannot return an error forces the
+    /// render to happen before the lookup, which makes the cache pure
+    /// overhead.
+    pub fn get(&mut self, source: &str) -> Option<Rendered> {
+        let key = hash(source.as_bytes());
+        self.used.insert(key.clone());
+        match self.entries.get(&key) {
+            Some(entry) => {
+                self.hits += 1;
+                Some(Rendered {
+                    html: entry.html.clone(),
+                    headings: entry.headings.clone(),
+                })
+            }
+            None => {
+                self.misses += 1;
+                None
+            }
+        }
+    }
+
+    /// Records a successful render.
+    pub fn insert(&mut self, source: &str, out: &Rendered) {
+        let key = hash(source.as_bytes());
+        self.used.insert(key.clone());
+        self.entries.insert(
+            key,
+            Entry {
+                html: out.html.clone(),
+                headings: out.headings.clone(),
+            },
+        );
+    }
+
     /// The rendered form of `source`, rendering it only on a miss.
     pub fn render<F>(&mut self, source: &str, render: F) -> Rendered
     where
@@ -189,6 +224,17 @@ mod tests {
                 text: "X".into(),
             }],
         }
+    }
+
+    #[test]
+    fn get_and_insert_let_a_fallible_render_use_the_cache() {
+        // The shape a caller needs when rendering returns a Result: look
+        // first, render only on a miss, store only a success.
+        let mut cache = RenderCache::new("sig");
+        assert!(cache.get("# T").is_none());
+        cache.insert("# T", &rendered("<h1>T</h1>"));
+        assert_eq!(cache.get("# T").expect("hit").html, "<h1>T</h1>");
+        assert_eq!(cache.stats(), (1, 1));
     }
 
     #[test]

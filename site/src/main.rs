@@ -15,6 +15,7 @@ use std::process::ExitCode;
 use std::rc::Rc;
 
 use depoth::config::Config;
+use depoth::feeds;
 use rsx::Template;
 
 fn read(path: &Path) -> String {
@@ -53,6 +54,7 @@ fn main() -> ExitCode {
     let docs = Rc::new(docs);
     let entries = Rc::new(entries);
 
+    let mut binary: Vec<depoth::images::Asset> = Vec::new();
     let mut site = prerender::Site::new()
         // Only the bundled stylesheet is published. Everything else under
         // assets/css is an input -- the theme, the two component sheets, the
@@ -67,7 +69,43 @@ fn main() -> ExitCode {
         // every path beginning with an underscore. Nothing here starts with
         // one today, which is exactly why this is easy to forget later.
         .static_file("/.nojekyll", "")
-        .static_file("/llms.txt", llms_txt(&config, &docs, &entries));
+        .static_file("/llms.txt", llms_txt(&config, &docs, &entries))
+        .static_file(
+            "/robots.txt",
+            feeds::robots(&config.base_url, "/sitemap.xml"),
+        );
+
+    // A sitemap of relative URLs is invalid rather than degraded, so it is
+    // omitted entirely when there is no origin to resolve against.
+    let feed_pages: Vec<feeds::Page> = entries
+        .iter()
+        .filter_map(|e| docs.get(&e.slug))
+        .map(|d| feeds::Page {
+            url: d.url.clone(),
+            title: d.title.clone(),
+            description: d.description.clone(),
+            updated: None,
+            hidden: false,
+        })
+        .collect();
+    if let Some(xml) = feeds::sitemap(&config.base_url, &feed_pages) {
+        site = site.static_file("/sitemap.xml", xml);
+    }
+
+    // Files that live beside the documents that reference them. Without this
+    // a screenshot next to its page is silently dropped.
+    for asset in content::colocated_assets(&root.join(&config.content_dir)) {
+        match std::fs::read(&asset.source) {
+            Ok(bytes) => match String::from_utf8(bytes) {
+                Ok(text) => site = site.static_file(asset.url.clone(), text),
+                // Binary assets are copied rather than written as text; the
+                // generator's static_file takes a String, so a directory copy
+                // is the right tool and the build does it below.
+                Err(_) => binary.push(asset),
+            },
+            Err(e) => eprintln!("warning: {}: {e}", asset.source.display()),
+        }
+    }
 
     // No prerender layout: each template emits a whole document, head and
     // all. That is what makes every page work with JavaScript off, and it is
@@ -108,7 +146,18 @@ fn main() -> ExitCode {
         });
     }
 
-    prerender::run(site)
+    let code = prerender::run(site);
+    // Binary co-located assets, copied after the tree is written.
+    for asset in &binary {
+        let target = root.join("dist").join(asset.url.trim_start_matches('/'));
+        if let Some(parent) = target.parent() {
+            let _ = std::fs::create_dir_all(parent);
+        }
+        if let Err(e) = std::fs::copy(&asset.source, &target) {
+            eprintln!("warning: copying {}: {e}", asset.source.display());
+        }
+    }
+    code
 }
 
 /// An index of the site as plain text, in navigation order.

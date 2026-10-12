@@ -1,0 +1,1079 @@
+1 2aba1c789b19a40655d10ecf8e5e067b
+key 6afd1df5061a606a103b06759b38640a
+h 2 why-yaml-and-not-toml Why YAML and not TOML
+h 2 a-complete-example A complete example
+h 2 identity Identity
+h 2 directories Directories
+h 2 navigation navigation
+h 2 redirects redirects
+h 2 commands commands
+h 2 bundles bundles
+h 2 unknown-keys-are-errors Unknown keys are errors
+<p>One file, <code>depoth.yaml</code>, owns the whole shell: identity, directories,
+navigation, redirects. It sits at the crate root.</p>
+<h2 id="why-yaml-and-not-toml">Why YAML and not TOML</h2>
+Why YAML and not TOML
+<p>Two reasons, and both are practical.</p>
+<p>The navigation tree is recursive. Groups nest inside groups, and real sites
+nest five deep. TOML can express that, but only through repeated table-array
+headers that are unreadable at that depth and give no visual cue about where
+you are in the tree. YAML's indentation is the tree.</p>
+<p>Frontmatter is already YAML. Using YAML for configuration too means a project
+carries one parser and one set of quoting rules rather than two.</p>
+<h2 id="a-complete-example">A complete example</h2>
+A complete example
+<pre class="hl"><code class="language-yaml"><span class="hl-source hl-yaml"><span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">name</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Depoth</span>
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">description</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">A static content framework in Rust.</span>
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">base_url</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">https://depoth.dev</span>
+
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">content_dir</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">content</span>
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">output_dir</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">dist</span>
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">public_dir</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">public</span>
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">assets_dir</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">assets</span>
+
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">navigation</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">tabs</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">tab</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Documentation</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">groups</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+        <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">group</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Getting started</span>
+          <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">root</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/index</span>
+          <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+            <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/install</span>
+            <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/configuration</span>
+        <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">group</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Reference</span>
+          <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">icon</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">book</span>
+          <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+            <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/navigation</span>
+            <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/content</span>
+            <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">group</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Advanced</span>
+              <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">expanded</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-constant hl-language hl-boolean hl-yaml">true</span>
+              <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+                <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/partial-navigation</span>
+                <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">docs/layouts</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">tab</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Changelog</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+        <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">changelog/index</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">tab</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Source</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">href</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">https://github.com/DHHwasRight/depoth</span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">anchors</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">anchor</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">GitHub</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">href</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">https://github.com/DHHwasRight/depoth</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">icon</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">github</span>
+
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">redirects</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">from</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">/getting-started</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">to</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">/docs/install</span>
+
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">commands</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">run</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">npx @tailwindcss/cli -i assets/css/theme.css -o assets/css/site.css</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">run</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">npx @tailwindcss/cli -i assets/css/theme.css -o assets/css/site.css --minify</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">mode</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">production</span>
+
+<span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">bundles</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">output</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">css/site.css</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">sources</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+      <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">css/theme.css</span>
+      <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">css/code.css</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">mode</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">production</span>
+</span></code></pre>
+<h2 id="identity">Identity</h2>
+Identity
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>required</td>
+<td>Shown in the navbar and appended to every page title.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>string</td>
+<td>none</td>
+<td>The site's own description.</td>
+</tr>
+<tr>
+<td><code>base_url</code></td>
+<td>string</td>
+<td>empty</td>
+<td>Absolute origin. Without it there is no sitemap and no canonical URL.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="directories">Directories</h2>
+Directories
+<p>Each is a path relative to the crate root.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>content_dir</code></td>
+<td><code>content</code></td>
+<td>Markdown documents.</td>
+</tr>
+<tr>
+<td><code>output_dir</code></td>
+<td><code>dist</code></td>
+<td>Where the build writes.</td>
+</tr>
+<tr>
+<td><code>public_dir</code></td>
+<td><code>public</code></td>
+<td>Copied verbatim, unprocessed.</td>
+</tr>
+<tr>
+<td><code>assets_dir</code></td>
+<td><code>assets</code></td>
+<td>Read, but not yet processed. See below.</td>
+</tr>
+</tbody>
+</table>
+<aside class="callout caution"><p class="callout__title">assets_dir is read, not processed</p><div class="callout__body"><p>There is no asset pipeline yet. The key is parsed and a site may name a
+directory, but nothing fingerprints, minifies or bundles its contents. This
+site builds its one stylesheet with the Tailwind CLI and publishes it by hand.
+Fingerprinting, bundling and subresource integrity are planned, not present.</p>
+</div></aside>
+<p>A file whose name starts with <code>_</code> is an input by convention. It is bundled into
+whatever imports it and is never published on its own. Today that convention is
+enforced by the site's own build script, not by depoth.</p>
+<h2 id="navigation">navigation</h2>
+navigation
+<p>Required. The tree is large enough to have its own page — see
+<a href="/docs/navigation">Navigation</a>.</p>
+<h2 id="redirects">redirects</h2>
+redirects
+<p>A list of <code>from</code> and <code>to</code> pairs. Both keys are required.</p>
+<pre class="hl"><code class="language-yaml"><span class="hl-source hl-yaml"><span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">redirects</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">from</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">/old/path</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">to</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">/docs/new-path</span>
+</span></code></pre>
+<h2 id="commands">commands</h2>
+commands
+<p>Shell commands run before assets are collected. The framework proposes the hook
+and stays out of what it runs. This is where a site wires up Tailwind, or
+anything else, without depoth knowing it exists.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run</code></td>
+<td>string</td>
+<td>The command line.</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>development</code> or <code>production</code></td>
+<td>When to run it. Absent means both.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bundles">bundles</h2>
+bundles
+<p>Published assets concatenated into one file. A bundle consumes its sources, so
+nothing leaves a stray copy behind in the output.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>output</code></td>
+<td>string</td>
+<td>Path of the bundled file.</td>
+</tr>
+<tr>
+<td><code>sources</code></td>
+<td>list of strings</td>
+<td>The files to concatenate, in order.</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>development</code> or <code>production</code></td>
+<td>When to bundle. Absent means both.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="unknown-keys-are-errors">Unknown keys are errors</h2>
+Unknown keys are errors
+<p>Every table in the configuration rejects keys it does not know. <code>base_ur1</code>
+fails the build and names itself in the message. A typo that is quietly ignored
+costs more time than any error message does.</p>
+<p>The navigation tree is validated as soon as the file parses, before any content
+is read. A malformed tree is therefore one error naming one node, not a cascade
+of missing-page errors.</p>
+
+key d0061a722c08bfb965a0075fd799c634
+h 2 frontmatter-keys Frontmatter keys
+h 2 the-body The body
+h 2 a-document-with-no-header A document with no header
+h 2 how-errors-are-reported How errors are reported
+h 2 why-depoth-splits-the-fences-itself Why depoth splits the fences itself
+<p>A document is a YAML header between <code>---</code> fences, followed by markdown. It
+lives under <code>content_dir</code> and its path, minus the extension, is the slug the
+navigation names.</p>
+<pre class="hl"><code class="language-markdown"><span class="hl-text hl-html hl-markdown"><span class="hl-meta hl-block-level hl-markdown"><span class="hl-meta hl-separator hl-thematic-break hl-markdown"><span class="hl-punctuation hl-definition hl-thematic-break hl-markdown">---</span>
+</span></span><span class="hl-meta hl-paragraph hl-markdown">title: Installing depoth
+description: One sentence, used as the page subtitle and the meta description.
+sidebar_title: Install
+<span class="hl-markup hl-heading hl-2 hl-setext hl-markdown"><span class="hl-punctuation hl-definition hl-heading hl-setext hl-markdown">---</span></span></span>
+
+<span class="hl-meta hl-paragraph hl-markdown">Prose starts here. The title supplies the <span class="hl-markup hl-raw hl-inline hl-markdown"><span class="hl-punctuation hl-definition hl-raw hl-begin hl-markdown">`</span>h1<span class="hl-punctuation hl-definition hl-raw hl-end hl-markdown">`</span></span>, so the body starts at <span class="hl-markup hl-raw hl-inline hl-markdown"><span class="hl-punctuation hl-definition hl-raw hl-begin hl-markdown">`</span>##<span class="hl-punctuation hl-definition hl-raw hl-end hl-markdown">`</span></span>.
+</span></span></code></pre>
+<h2 id="frontmatter-keys">Frontmatter keys</h2>
+Frontmatter keys
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>title</code></td>
+<td>yes</td>
+<td>The page heading, the <code>&lt;title&gt;</code>, and the navigation label.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>no</td>
+<td>The page subtitle and the meta description.</td>
+</tr>
+<tr>
+<td><code>sidebar_title</code></td>
+<td>no</td>
+<td>A shorter label for the sidebar, when the title is too long for it.</td>
+</tr>
+</tbody>
+</table>
+<p>The navigation label is <code>sidebar_title</code> when it is present and <code>title</code>
+otherwise. Nothing in the navigation declaration repeats either of them.</p>
+<p>Three keys is not an accident. Across 489 production pages, <code>title</code> appeared
+487 times, <code>description</code> 260 and a sidebar title 6. A small number of keys
+carries a real site.</p>
+<h2 id="the-body">The body</h2>
+The body
+<p>The body is markdown, rendered at build time. Headings get GitHub-compatible
+anchor ids and are collected into the on-this-page rail with their level, their
+id and their text.</p>
+<p>Code fences are highlighted at build time, so no highlighter is sent to the
+browser. A site with no code on it ships no CSS for code.</p>
+<h2 id="a-document-with-no-header">A document with no header</h2>
+A document with no header
+<p>Not an error. It is a document with no header, and the body starts at line 1.</p>
+<p>An opening <code>---</code> with no closing <code>---</code> is also left as a body in full. Guessing
+that the author meant a header would hide the real mistake, which is the
+missing fence.</p>
+<p>A <code>---</code> thematic break inside the body is not a closing fence, because the
+closing fence is only the first line that is exactly <code>---</code>. A byte-order mark
+at the start of the file does not hide the opening fence either.</p>
+<h2 id="how-errors-are-reported">How errors are reported</h2>
+How errors are reported
+<p>A frontmatter mistake is reported with the file, the line, the column and the
+field:</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">guide/install.md:3:9  weight: invalid type: string &quot;3&quot;, expected u64
+</span></code></pre>
+<p>The line is counted from the start of the file, not from the start of the
+header. The field is the dotted path serde walked to reach the failure, which
+still names it when the failure is nested inside a sequence or a map. An
+unknown key names the alternatives, so <code>titel</code> suggests <code>title</code>.</p>
+<h2 id="why-depoth-splits-the-fences-itself">Why depoth splits the fences itself</h2>
+Why depoth splits the fences itself
+<p>Splitting <code>---</code> fences is about ten lines. Every frontmatter crate does it, and
+every one of them hands back the YAML and throws away where the YAML started.</p>
+<p>That byte offset is the whole difference between</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">line 2 column 9: invalid type: string &quot;3&quot;, expected u64
+</span></code></pre>
+<p>and the message above. The first one is relative to a block the author cannot
+see — they are looking at a file, and the header has an opening fence the
+parser already removed. Keeping the offset costs ten lines and one dependency
+saved, and it turns every frontmatter error from a hunt into a jump.</p>
+
+key df151055fe50ecb911f35ec394d1a11c
+h 2 the-six-rules The six rules
+h 2 why-it-runs-in-milliseconds Why it runs in milliseconds
+h 2 what-is-left-to-playwright What is left to Playwright
+<p>The output of a static site generator is HTML on disk, so almost every claim
+worth making about it can be checked by reading that HTML. <code>depoth-test</code> does
+that, in process, with no browser.</p>
+<pre class="hl"><code class="language-rust"><span class="hl-source hl-rust"><span class="hl-keyword hl-other hl-rust">use</span> <span class="hl-meta hl-path hl-rust">depoth_test<span class="hl-punctuation hl-accessor hl-rust">::</span></span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>assert_clean<span class="hl-punctuation hl-separator hl-rust">,</span> Policy<span class="hl-punctuation hl-separator hl-rust">,</span> Site</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
+
+<span class="hl-meta hl-annotation hl-rust"><span class="hl-punctuation hl-definition hl-annotation hl-rust">#</span><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">[</span><span class="hl-variable hl-annotation hl-rust">test</span><span class="hl-punctuation hl-section hl-group hl-end hl-rust">]</span></span>
+<span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-rust"><span class="hl-storage hl-type hl-function hl-rust">fn</span> </span><span class="hl-entity hl-name hl-function hl-rust">the_site_is_clean</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-begin hl-rust">(</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-end hl-rust">)</span></span></span></span><span class="hl-meta hl-function hl-rust"> </span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>
+    <span class="hl-storage hl-type hl-rust">let</span> site <span class="hl-keyword hl-operator hl-assignment hl-rust">=</span> <span class="hl-meta hl-path hl-rust">Site<span class="hl-punctuation hl-accessor hl-rust">::</span></span>open<span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>dist<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-accessor hl-dot hl-rust">.</span><span class="hl-support hl-function hl-rust">expect</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>built<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
+    <span class="hl-support hl-function hl-rust">assert_clean</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-keyword hl-operator hl-bitwise hl-rust">&amp;</span>site<span class="hl-punctuation hl-separator hl-rust">,</span> <span class="hl-keyword hl-operator hl-bitwise hl-rust">&amp;</span><span class="hl-meta hl-path hl-rust">Policy<span class="hl-punctuation hl-accessor hl-rust">::</span></span>default<span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
+</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span></span>
+</span></code></pre>
+<p><code>Site::open</code> reads every <code>.html</code> file under the root and indexes every other
+file so asset links can be resolved. <code>check</code> returns findings rather than
+panicking at the first one, because a harness that stops at the first finding
+turns one build into ten runs.</p>
+<h2 id="the-six-rules">The six rules</h2>
+The six rules
+<p>The rules are not invented. Each one is a bug that reached a human in an
+earlier generation of this project, and every one of them was <strong>between</strong> pages
+rather than inside one.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>What it asserts</th>
+<th>Why it exists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dead-link</code></td>
+<td>Every internal <code>href</code> resolves to a file that was built.</td>
+<td>A page was renamed and the links to it were not. The commonest failure by a distance.</td>
+</tr>
+<tr>
+<td><code>dead-asset</code></td>
+<td>Every <code>img</code>, <code>script</code>, <code>link</code> and <code>source</code> target exists.</td>
+<td>The same rename, applied to a stylesheet or an image instead of a page.</td>
+</tr>
+<tr>
+<td><code>duplicate-chrome</code></td>
+<td>Selectors that must match exactly once, match exactly once.</td>
+<td>A doubled navbar, and three stacked nav strips. A count that should be one and is two.</td>
+</tr>
+<tr>
+<td><code>incomplete-document</code></td>
+<td>Each page has a doctype, a <code>lang</code>, a non-empty <code>&lt;title&gt;</code> and exactly one <code>h1</code>.</td>
+<td>A fragment written to a route a browser can navigate to — which is what produced the doubled navbar upstream of it.</td>
+</tr>
+<tr>
+<td><code>links-into-a-partial</code></td>
+<td>No <code>href</code> points at a fragment.</td>
+<td>A fragment is fetched, never navigated to. A link to one hands the reader a page with no shell around it.</td>
+</tr>
+<tr>
+<td><code>headings</code></td>
+<td>No heading level is skipped.</td>
+<td>The outline is the document's structure for anything that cannot see the page.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Policy</code> is what &quot;correct&quot; means for one site: which selectors must be unique,
+which routes are allowed to be partial, and which link prefixes to leave alone.
+The default requires exactly one <code>body &gt; header</code> and one <code>main</code> on every page.</p>
+<p>External links, <code>mailto:</code>, <code>tel:</code>, <code>data:</code> and bare fragments are left alone.
+Relative links resolve against the page's own directory.</p>
+<p><code>Site::titles</code> groups pages by their <code>&lt;title&gt;</code>, which is how a template that
+stamped one title onto everything shows up.</p>
+<aside class="callout caution"><p class="callout__title">A check that cannot fail is not coverage</p><div class="callout__body"><p>The base-path rule shipped once with its <code>Policy</code> field wired up and the code
+that used it missing, so it stored a value and did nothing. Every rule here has
+a test that plants the defect it looks for.</p>
+</div></aside>
+<h2 id="why-it-runs-in-milliseconds">Why it runs in milliseconds</h2>
+Why it runs in milliseconds
+<p>There is no browser process, no HTTP server, no page load and no screenshot
+comparison. The harness parses HTML in process and walks it with a CSS selector
+engine. A browser suite pays a process launch and a real page load per
+navigation, which is why it is measured in seconds, and it proves nothing about
+these six rules that reading the files does not already prove.</p>
+<p>The one dependency is <code>scraper</code> — html5ever's parser with a complete selector
+engine, seventeen crates that a site's own binary never links. It is bought
+deliberately: a harness that mis-parses HTML gives false confidence rather than
+no confidence.</p>
+<p>Each rule has a test with a fixture carrying exactly the bug it looks for. A
+check that cannot fail is worse than no check, because it reads as coverage.</p>
+<h2 id="what-is-left-to-playwright">What is left to Playwright</h2>
+What is left to Playwright
+<p>Three kinds of claim need a real browser, and they are run from the first page
+rather than after the last:</p>
+<ul>
+<li>Layout at a breakpoint. Nothing about the DOM tells you two elements overlap
+at 390 pixels.</li>
+<li>A swap actually happening. The partial-navigation claims are asserted by
+marking live elements and checking which marks survived the swap, which
+requires a live DOM across a navigation.</li>
+<li>A visual baseline, at several widths.</li>
+</ul>
+<p>The no-JavaScript pass also belongs there, because turning JavaScript off is a
+browser setting. That every page works with JavaScript off is a test, not a
+guideline.</p>
+
+key e51b7c11ecd364df8951b0a4bef9488c
+h 2 loading-them Loading them
+h 2 what-compiling-buys What compiling buys
+h 2 what-compiling-costs What compiling costs
+h 2 layouts Layouts
+<p>Templates are <a href="https://github.com/DHHwasRight/rsx">rsx</a>. An <code>.rsx</code> file is
+Rust — <code>use</code> declarations, items, functions — except that a function returning
+<code>Element</code> has a markup body.</p>
+<pre class="hl"><code class="language-rust"><span class="hl-source hl-rust"><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-rust"><span class="hl-storage hl-modifier hl-rust">pub</span> <span class="hl-storage hl-type hl-function hl-rust">fn</span> </span><span class="hl-entity hl-name hl-function hl-rust">Card</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-begin hl-rust">(</span><span class="hl-variable hl-parameter hl-rust">title</span><span class="hl-punctuation hl-separator hl-rust">:</span> <span class="hl-keyword hl-operator hl-rust">&amp;</span><span class="hl-storage hl-type hl-rust">str</span>, <span class="hl-variable hl-parameter hl-rust">count</span><span class="hl-punctuation hl-separator hl-rust">:</span> <span class="hl-storage hl-type hl-rust">usize</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-end hl-rust">)</span></span></span></span><span class="hl-meta hl-function hl-rust"> <span class="hl-meta hl-function hl-return-type hl-rust"><span class="hl-punctuation hl-separator hl-rust">-&gt;</span> Element</span> </span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>
+    <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>div class<span class="hl-keyword hl-operator hl-assignment hl-rust">=</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>card<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+        <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>h2<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>title</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>h2<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+        <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>span<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>count</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>span<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+    <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>div<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span></span>
+</span></code></pre>
+<p>A component is a function whose name starts with an uppercase letter, because
+that is how the markup tells a component from an HTML element. A parameter of
+type <code>Element</code> receives children. Visibility, generics and <code>where</code> clauses are
+ordinary Rust.</p>
+<h2 id="loading-them">Loading them</h2>
+Loading them
+<pre class="hl"><code class="language-rust"><span class="hl-source hl-rust"><span class="hl-meta hl-path hl-rust">rsx<span class="hl-punctuation hl-accessor hl-rust">::</span></span>load_dir<span class="hl-keyword hl-operator hl-logical hl-rust">!</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>src/views<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>       <span class="hl-comment hl-line hl-double-slash hl-rust"><span class="hl-punctuation hl-definition hl-comment hl-rust">//</span> every .rsx under the directory
+</span><span class="hl-meta hl-path hl-rust">rsx<span class="hl-punctuation hl-accessor hl-rust">::</span></span>load<span class="hl-keyword hl-operator hl-logical hl-rust">!</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>src/views/card.rsx<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>  <span class="hl-comment hl-line hl-double-slash hl-rust"><span class="hl-punctuation hl-definition hl-comment hl-rust">//</span> one file
+</span></span></code></pre>
+<p>Paths are relative to the crate root. There is no <code>build.rs</code>: the macro
+compiles the templates during expansion and emits an <code>include_bytes!</code> for every
+file it reads, which is what makes cargo rebuild when a template changes.</p>
+<h2 id="what-compiling-buys">What compiling buys</h2>
+What compiling buys
+<p>The template is type checked. A component called with the wrong argument, a
+missing field, a renamed struct — all of them are compile errors naming the
+line, not a blank region in a rendered page or a run-time panic on the one
+route nobody opened.</p>
+<p>Escaping is in the type system. <code>{expr}</code> renders any <code>Display</code> value with HTML
+escaping applied, and nothing is allocated to do it: formatting goes into the
+output buffer through an escaping adapter. <code>{! expr}</code> renders without escaping
+and is the only way to emit HTML you built elsewhere, so an audit for XSS is a
+grep for one token.</p>
+<p>There is no template interpreter to maintain. An interpreter is a second,
+weaker implementation of a compiler that already exists.</p>
+<h2 id="what-compiling-costs">What compiling costs</h2>
+What compiling costs
+<p>A template edit pays for a compile. Measured on a thirteen-template probe with
+a warm <code>target/</code>, that edit costs <strong>0.50 s</strong> — four times faster than the
+Crystal predecessor's 2.0 s, because the heavy dependencies are compiled once
+and only the leaf crate recompiles. A content edit pays nothing, because it
+re-runs the binary you already have.</p>
+<p>Two honest caveats. Codegen scales with template count, and 0.50 s is a
+thirteen-template measurement. And a release build of the probe is 49 s, which
+is a deploy cost rather than an authoring one — but it means <code>--release</code> must
+never be the default for development.</p>
+<p>The other cost is harder to price: a template is not editable without a Rust
+toolchain. You cannot ship a theme as a folder of files that a reader edits in
+place, and you cannot reload a template without a rebuild. depoth takes that
+trade deliberately. The alternative is an interpreter, and the clock
+measurements say the trade is not needed.</p>
+<h2 id="layouts">Layouts</h2>
+Layouts
+<p>A layout is a component registered against a path prefix, and it wraps every
+route beneath that prefix. Rendering folds from the innermost layout outward.
+Each layout must mark the element that wraps exactly its children — see
+<a href="/docs/partial-navigation">Partial navigation</a>, where that marker does its real
+work.</p>
+
+key 2562b08bef52e8007433bea2b6ac6e13
+h 2 what-it-is-for What it is for
+h 2 what-it-is-not-for What it is not for
+h 2 maturity Maturity
+<p>Two sentences carry the whole design.</p>
+<p><strong>Templates compile; content does not.</strong> A template is Rust. The compiler reads
+it, type-checks it and puts it in the binary. A markdown document is data. The
+built binary reads it at run time. The two sit on different clocks: a template
+edit pays for a compile, a content edit does not.</p>
+<p><strong>There is no backend.</strong> The output is files. Nothing runs at request time, so
+any static file server can publish the result.</p>
+<h2 id="what-it-is-for">What it is for</h2>
+What it is for
+<p>A documentation site, or any site whose content is markdown and whose shell is
+a navigation tree. depoth gives you one configuration file, one navigation
+declaration, compiled templates, and a build that writes HTML to a directory.
+Navigation is declared once and yields the sidebar, the tab bar, the
+breadcrumbs and the prev/next links, so they cannot disagree with each other.</p>
+<p>It also prerenders partial navigation. Each route is written as a complete
+document and again as a set of smaller trees, so a client with JavaScript can
+replace only the part of the page that changed. Every page still works with
+JavaScript off, because the document was never derived from the fragment.</p>
+<h2 id="what-it-is-not-for">What it is not for</h2>
+What it is not for
+<p>Anything that needs compute when a visitor asks for a page. There is no request
+handler, no session, no form endpoint and no database. An interactive API
+playground needs a server to proxy requests, so depoth does not have one.</p>
+<p>It also does not choose your CSS framework, your bundler or your JavaScript
+toolchain. The framework proposes a pre-build command hook and stays out of
+what you run in it. This site uses Tailwind; depoth does not know Tailwind
+exists.</p>
+<h2 id="maturity">Maturity</h2>
+Maturity
+<p>Early. The repository is at version 0.1.0 and contains the configuration
+parser, the navigation model, the frontmatter splitter and the test harness.
+The render pipeline, the command-line interface, the component library and
+search are not written yet. Where a page below describes something that is not
+built, it says so.</p>
+<p>The predecessor is real, which is why the decisions are not guesses. The
+Crystal depoth reached 0.2.0 with 315 specs and one 489-page production site.
+Most of what you read here is inherited from it rather than invented here.</p>
+
+key 43eb2cb9d836f6227039215e1cf39bda
+h 2 dp-layout-markers dp-layout markers
+h 2 asking-for-less Asking for less
+h 2 chrome-that-is-not-swapped Chrome that is not swapped
+h 2 --no-partials --no-partials
+<p>Every route is built several times: once as a full document, and once for each
+number of layout layers a visitor might already be holding. With JavaScript, a
+click fetches the smallest form that still covers what changed and swaps it in.
+Without JavaScript — a crawler, a reader who turned it off, the first load of
+any page — the browser gets the document.</p>
+<p>Neither form is derived from the other at run time. The server stays a static
+file server. This is <a href="https://github.com/DHHwasRight/prerender">prerender</a> on
+the build side and <a href="https://github.com/DHHwasRight/htmx">dp-swap</a> on the client
+side.</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">dist/delta/card-6/activity/index.html             2932 bytes   &lt;!DOCTYPE&gt; down
+dist-partial/1/delta/card-6/activity/index.html   2468 bytes   below the shell
+dist-partial/2/…                                  1791 bytes   below the section
+dist-partial/3/…                                   425 bytes   one panel
+</span></code></pre>
+<h2 id="dp-layout-markers">dp-layout markers</h2>
+dp-layout markers
+<p>A layout must mark the element that wraps <strong>exactly</strong> its children with the
+prefix it was registered under.</p>
+<pre class="hl"><code class="language-rust"><span class="hl-source hl-rust"><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-rust"><span class="hl-storage hl-modifier hl-rust">pub</span> <span class="hl-storage hl-type hl-function hl-rust">fn</span> </span><span class="hl-entity hl-name hl-function hl-rust">Docs</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-begin hl-rust">(</span><span class="hl-variable hl-parameter hl-rust">layout</span><span class="hl-punctuation hl-separator hl-rust">:</span> <span class="hl-keyword hl-operator hl-rust">&amp;</span><span class="hl-storage hl-type hl-rust">str</span>, <span class="hl-variable hl-parameter hl-rust">children</span><span class="hl-punctuation hl-separator hl-rust">:</span> Element</span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-end hl-rust">)</span></span></span></span><span class="hl-meta hl-function hl-rust"> <span class="hl-meta hl-function hl-return-type hl-rust"><span class="hl-punctuation hl-separator hl-rust">-&gt;</span> Element</span> </span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>
+    <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>div class<span class="hl-keyword hl-operator hl-assignment hl-rust">=</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">&quot;</span>docs<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">&quot;</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+        <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>aside<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>…sidebar…<span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>aside<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+        <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span>div dp<span class="hl-keyword hl-operator hl-arithmetic hl-rust">-</span>layout<span class="hl-keyword hl-operator hl-assignment hl-rust">=</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>layout</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>children</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span><span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>div<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+    <span class="hl-keyword hl-operator hl-comparison hl-rust">&lt;</span><span class="hl-keyword hl-operator hl-arithmetic hl-rust">/</span>div<span class="hl-keyword hl-operator hl-comparison hl-rust">&gt;</span>
+</span><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span></span>
+</span></code></pre>
+<p>That marker is the whole trick. A partial contains every layout below the one
+it starts at, because the server does not know where the visitor came from. The
+client does — the old DOM is right there. dp-swap walks both trees down their
+<code>dp-layout</code> markers, finds the last layer whose prefix matches on both sides,
+and replaces only what is below it.</p>
+<table>
+<thead>
+<tr>
+<th>navigation</th>
+<th>deepest shared layer</th>
+<th>what is replaced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/docs/guides/install</code> → <code>/docs/guides/deploy</code></td>
+<td><code>/docs/guides</code></td>
+<td>the guide body</td>
+</tr>
+<tr>
+<td><code>/docs/reference</code> → <code>/docs/guides/install</code></td>
+<td><code>/docs</code></td>
+<td>the whole guides section</td>
+</tr>
+<tr>
+<td><code>/about</code> → <code>/docs/guides/install</code></td>
+<td>none</td>
+<td>the entire outlet</td>
+</tr>
+</tbody>
+</table>
+<p>Put the marker on the element wrapping exactly the children and nothing else.
+Anything a layout renders inside the marked element is replaced along with
+them, so a sidebar inside the marker loses its scroll position on every
+navigation — which looks like a working site that flickers rather than one that
+breaks. <code>prerender check</code> fails the build when a layout forgets its marker or
+drops its children. It cannot catch a marker in the wrong place.</p>
+<h2 id="asking-for-less">Asking for less</h2>
+Asking for less
+<p>The client counts the layers it already holds and sends the number:</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">GET /delta/card-6/activity      DP-Partial: 3
+</span></code></pre>
+<p>The server answers from <code>dist-partial/3</code>. Nothing is configured for this and
+there is no manifest: the markers in the live document name the prefixes the
+current page sits under, and the build writes one tree per depth up to the
+deepest layout chain in the site. A server that does not understand the number
+can treat any value as &quot;give me the fragment&quot; and serve depth 1.</p>
+<p>All the forms live at the same URL. A request carrying <code>DP-Partial</code> is served
+from a partial tree; everything else gets the document.</p>
+<h2 id="chrome-that-is-not-swapped">Chrome that is not swapped</h2>
+Chrome that is not swapped
+<p>The deeper the swap, the more of the page keeps its old state — including the
+sidebar link still highlighted for the section you left. A layout can be
+registered with a second renderer whose output is applied out of band. It emits
+elements carrying <code>dp-swap-oob</code> and an <code>id</code>, and the client applies them by
+<code>id</code> before the main swap. Only the deepest skipped layout contributes
+out-of-band markup to a given partial, so a response never carries replacements
+for chrome the client is about to discard.</p>
+<h2 id="--no-partials">--no-partials</h2>
+--no-partials
+<p>Partial navigation needs a server that can route on a request header. Some
+hosts have none — GitHub Pages among them — and there the partial trees are
+bytes nothing can ever ask for.</p>
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build --no-partials</span>
+</span></code></pre>
+<p>One tree, an ordinary static site. Navigation degrades to full page loads and
+nothing else changes, because every page was already a complete document —
+which is the same property that makes the site work with JavaScript off.</p>
+<p>The switch is not a second rendering path. A test asserts the documents are
+byte-identical either way, so the site you publish is the site that was tested.</p>
+
+key d59ffacbe4b788afd1e4089bc6de5f27
+h 2 the-one-child-kind-rule The one-child-kind rule
+h 2 the-root The root
+h 2 tabs Tabs
+h 2 groups Groups
+h 2 pages Pages
+h 2 anchors Anchors
+h 2 what-flattening-produces What flattening produces
+h 2 a-page-listed-twice-is-rejected A page listed twice is rejected
+h 2 prevnext-stops-at-a-tab-boundary Prev/next stops at a tab boundary
+<p>Navigation is one tree, declared in <code>depoth.yaml</code>, outside the content. From it
+come the sidebar, the tab bar, the breadcrumbs and the prev/next links. They
+are the same data read four ways, so they cannot disagree.</p>
+<p>The tree names slugs only. Every title comes from the page's own frontmatter,
+so a title is never written in two places. That has a consequence for the
+build: the sidebar cannot be built until the content is loaded. The build order
+is discover content, read frontmatter, resolve navigation, render.</p>
+<h2 id="the-one-child-kind-rule">The one-child-kind rule</h2>
+The one-child-kind rule
+<p><strong>A node carries exactly one kind of child.</strong> A tab holds groups or pages,
+never both. The root holds tabs, or groups, or pages, never two of them.</p>
+<p>The rule is Mintlify's and it is worth copying exactly. It is why a 489-page
+site stays a readable 1,100-line file: at every level you are reading a list of
+one thing, not a mixture you have to sort by eye. It is also why the tree can
+be validated rather than merely parsed — a node with two kinds of child has no
+single correct rendering, and guessing one produces a sidebar that is wrong in
+a way nobody notices.</p>
+<p>Three concepts exist and no more: tabs, groups (which nest), and pages. Global
+anchors handle the handful of external links. A 489-page production corpus used
+exactly that — <code>tabs</code> to <code>groups</code> to nested groups to page strings, four global
+anchors and one external-href tab.</p>
+<h2 id="the-root">The root</h2>
+The root
+<p>Exactly one of <code>tabs</code>, <code>groups</code> or <code>pages</code>. <code>anchors</code> may accompany any of
+them, because an anchor is a link rather than a container.</p>
+<pre class="hl"><code class="language-yaml"><span class="hl-source hl-yaml"><span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">navigation</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">groups</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">group</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Guide</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-meta hl-flow-sequence hl-yaml"><span class="hl-punctuation hl-definition hl-sequence hl-begin hl-yaml">[</span><span class="hl-string hl-unquoted hl-plain hl-in hl-yaml">docs/index</span><span class="hl-punctuation hl-separator hl-sequence hl-yaml">,</span> <span class="hl-string hl-unquoted hl-plain hl-in hl-yaml">docs/install</span><span class="hl-punctuation hl-definition hl-sequence hl-end hl-yaml">]</span></span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">anchors</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">anchor</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">GitHub</span>
+      <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">href</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">https://github.com/DHHwasRight/depoth</span>
+</span></code></pre>
+<p>Declaring none is an error. Declaring two is an error that names both.</p>
+<h2 id="tabs">Tabs</h2>
+Tabs
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tab</code></td>
+<td>string</td>
+<td>Required. The label.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td>string</td>
+<td>Optional icon name.</td>
+</tr>
+<tr>
+<td><code>href</code></td>
+<td>string</td>
+<td>Makes the tab a plain external link rather than a container.</td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>list of groups</td>
+<td>Optional.</td>
+</tr>
+<tr>
+<td><code>pages</code></td>
+<td>list of nodes</td>
+<td>Optional.</td>
+</tr>
+</tbody>
+</table>
+<p>A tab with neither pages nor groups nor an <code>href</code> is an error: it is a control
+that cannot go anywhere. A tab that is only an <code>href</code> is allowed and is the
+normal way to put a link to a source repository in the tab bar.</p>
+<h2 id="groups">Groups</h2>
+Groups
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>group</code></td>
+<td>string</td>
+<td>required</td>
+<td>The label.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td>string</td>
+<td>none</td>
+<td>Optional icon name.</td>
+</tr>
+<tr>
+<td><code>tag</code></td>
+<td>string</td>
+<td>none</td>
+<td>A short badge beside the group name.</td>
+</tr>
+<tr>
+<td><code>root</code></td>
+<td>slug</td>
+<td>none</td>
+<td>Clicking the group title opens this page.</td>
+</tr>
+<tr>
+<td><code>expanded</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Whether a nested group starts open.</td>
+</tr>
+<tr>
+<td><code>pages</code></td>
+<td>list of nodes</td>
+<td>empty</td>
+<td>The children.</td>
+</tr>
+</tbody>
+</table>
+<p>A nested group is an accordion and is closed unless <code>expanded</code> is set. A
+top-level group is always open. That is Mintlify's rule and a good one: the
+outermost level is a section heading, not a control.</p>
+<p>A group's <code>root</code> page is placed before its children, which is the order a
+reader meets them.</p>
+<h2 id="pages">Pages</h2>
+Pages
+<p>An entry under <code>pages</code> is either a slug or a nested group. Nothing else. In
+particular there is no external link here, because a link belongs to a tab or
+to an anchor.</p>
+<pre class="hl"><code class="language-yaml"><span class="hl-source hl-yaml"><span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">guide/welcome</span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">group</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">Self-hosted</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">pages</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-meta hl-flow-sequence hl-yaml"><span class="hl-punctuation hl-definition hl-sequence hl-begin hl-yaml">[</span><span class="hl-string hl-unquoted hl-plain hl-in hl-yaml">guide/self-hosted/overview</span><span class="hl-punctuation hl-separator hl-sequence hl-yaml">,</span> <span class="hl-string hl-unquoted hl-plain hl-in hl-yaml">guide/self-hosted/docker</span><span class="hl-punctuation hl-definition hl-sequence hl-end hl-yaml">]</span></span>
+  <span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">guide/cloud</span>
+</span></code></pre>
+<h2 id="anchors">Anchors</h2>
+Anchors
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>anchor</code></td>
+<td>string</td>
+<td>Required. The label.</td>
+</tr>
+<tr>
+<td><code>href</code></td>
+<td>string</td>
+<td>Required. External URL.</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td>string</td>
+<td>Optional icon name.</td>
+</tr>
+</tbody>
+</table>
+<p>Anchors are shown on every page regardless of section.</p>
+<h2 id="what-flattening-produces">What flattening produces</h2>
+What flattening produces
+<p>The tree is flattened once into a list of entries in reading order. Each entry
+carries its slug, the tab it sits under, the trail of enclosing group names
+outermost first, and its index in the whole order.</p>
+<p>The trail is the breadcrumb. The index is the prev/next order. The sidebar is
+the same walk, stopped at the current tab. <code>llms.txt</code> is the same list again.
+One flatten, four readers.</p>
+<h2 id="a-page-listed-twice-is-rejected">A page listed twice is rejected</h2>
+A page listed twice is rejected
+<p>Validation fails if any slug appears more than once in the flattened order.</p>
+<p>Two sidebar entries for one page makes prev/next ambiguous — the reader can
+arrive at the page from one position and leave from the other — and it makes
+the active-state highlight flicker between the two entries. There is no answer
+that is right, so the tree is refused instead.</p>
+<h2 id="prevnext-stops-at-a-tab-boundary">Prev/next stops at a tab boundary</h2>
+Prev/next stops at a tab boundary
+<p>The page before and after a slug are its neighbours <strong>within its own tab</strong>. The
+last page of a tab has no next page, even though another page follows it in the
+flat order.</p>
+<p>A tab is a section a reader chose to be in. Walking them out of it with a
+&quot;Next&quot; button is a navigation they did not ask for, and it lands them somewhere
+with a different sidebar and no way back along the trail they were following.
+If the site has no tabs, every page is in the same <code>None</code> tab and prev/next
+runs end to end.</p>
+
+key 985e0540c4c255a0b74dd032444565cd
+h 2 building-for-release Building for release
+h 2 a-host-with-no-header-routing A host with no header routing
+h 2 github-pages GitHub Pages
+h 2 nginx nginx
+<p>The output is files. Any static file server can publish it, and no server
+software is required for the site to work. What a server buys you is partial
+navigation, which needs a host that can route on a request header.</p>
+<h2 id="building-for-release">Building for release</h2>
+Building for release
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>release</span><span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build</span>
+</span></code></pre>
+<p>Build in release mode for a deploy. On the thirteen-template probe a release
+build took 49 s, which is a deploy cost rather than an authoring one — and the
+reason <code>--release</code> must never be the default during development.</p>
+<p>Empty the output directory before writing to it. The predecessor's doc site
+shipped two copies of its stylesheet for weeks, an old unfingerprinted one left
+behind from when it lived in <code>public/</code>.</p>
+<h2 id="a-host-with-no-header-routing">A host with no header routing</h2>
+A host with no header routing
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>release</span><span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build --no-partials</span>
+</span></code></pre>
+<p>One tree, an ordinary static site. Navigation degrades to full page loads and
+nothing else changes, because every page was already a complete document. A
+test asserts the documents are byte-identical either way, so the site you
+publish is the site that was tested.</p>
+<h2 id="github-pages">GitHub Pages</h2>
+GitHub Pages
+<p>GitHub Pages cannot route on a header, so build with <code>--no-partials</code> and
+publish the single tree.</p>
+<pre class="hl"><code class="language-yaml"><span class="hl-source hl-yaml"><span class="hl-comment hl-line hl-number-sign hl-yaml"><span class="hl-punctuation hl-definition hl-comment hl-line hl-number-sign hl-yaml">#</span> .github/workflows/pages.yml
+</span><span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">uses</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">dtolnay/rust-toolchain@master</span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">with</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">toolchain</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-quoted hl-double hl-yaml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-yaml">&quot;</span>1.98<span class="hl-punctuation hl-definition hl-string hl-end hl-yaml">&quot;</span></span>
+<span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">run</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">cargo run --release -- build --no-partials</span>
+<span class="hl-punctuation hl-definition hl-block hl-sequence hl-item hl-yaml">-</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">uses</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">actions/upload-pages-artifact@v3</span>
+  <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">with</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span>
+    <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml"><span class="hl-entity hl-name hl-tag hl-yaml">path</span></span><span class="hl-punctuation hl-separator hl-key-value hl-mapping hl-yaml">:</span> <span class="hl-string hl-unquoted hl-plain hl-out hl-yaml">dist</span>
+</span></code></pre>
+<p>Pin the toolchain version. <code>rsx</code> compiles templates in a procedural macro and
+its artifacts are not compatible across patch releases of rustc, so a runner
+that silently moves to a newer toolchain fails in a way that does not name the
+cause.</p>
+<p>Set <code>base_url</code> in <code>depoth.yaml</code> to the published origin. Without it there is no
+sitemap and no canonical URL.</p>
+<h2 id="nginx">nginx</h2>
+nginx
+<p><code>prerender nginx</code> emits a complete config, not a snippet, so it runs as
+printed.</p>
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>release</span><span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build</span>
+<span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>release</span><span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> nginx --prefix .run --port 8099 <span class="hl-keyword hl-operator hl-assignment hl-redirection hl-shell">&gt;</span> .run/nginx.conf</span>
+<span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">nginx</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"><span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> -</span>p</span> <span class="hl-string hl-quoted hl-double hl-shell"><span class="hl-punctuation hl-definition hl-string hl-begin hl-shell">&quot;</span><span class="hl-meta hl-group hl-expansion hl-parameter hl-shell"><span class="hl-punctuation hl-definition hl-variable hl-shell">$</span><span class="hl-variable hl-other hl-readwrite hl-shell">PWD</span></span>/.run<span class="hl-punctuation hl-definition hl-string hl-end hl-shell">&quot;</span></span><span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> -</span>c</span> <span class="hl-string hl-quoted hl-double hl-shell"><span class="hl-punctuation hl-definition hl-string hl-begin hl-shell">&quot;</span><span class="hl-meta hl-group hl-expansion hl-parameter hl-shell"><span class="hl-punctuation hl-definition hl-variable hl-shell">$</span><span class="hl-variable hl-other hl-readwrite hl-shell">PWD</span></span>/.run/nginx.conf<span class="hl-punctuation hl-definition hl-string hl-end hl-shell">&quot;</span></span></span>
+</span></code></pre>
+<pre class="hl"><code class="language-nginx"><span class="hl-source hl-nginx"><span class="hl-meta hl-context hl-map hl-nginx"><span class="hl-storage hl-type hl-context hl-nginx">map</span> <span class="hl-variable hl-other hl-nginx">$http_dp_partial</span> <span class="hl-variable hl-other hl-nginx">$prerender_root</span> {
+   <span class="hl-constant hl-language hl-nginx"> default</span>   …/dist<span class="hl-punctuation hl-definition hl-map hl-nginx">;</span>
+    <span class="hl-string hl-regexp hl-nginx">~*</span><span class="hl-string hl-regexp hl-nginx">^true$</span>  …/dist-partial/1<span class="hl-punctuation hl-definition hl-map hl-nginx">;</span>
+    <span class="hl-string hl-quoted hl-double hl-nginx">&quot;1&quot;</span>       …/dist-partial/1<span class="hl-punctuation hl-definition hl-map hl-nginx">;</span>
+    <span class="hl-string hl-quoted hl-double hl-nginx">&quot;2&quot;</span>       …/dist-partial/2<span class="hl-punctuation hl-definition hl-map hl-nginx">;</span>
+    <span class="hl-string hl-quoted hl-double hl-nginx">&quot;3&quot;</span>       …/dist-partial/3<span class="hl-punctuation hl-definition hl-map hl-nginx">;</span>
+}</span>
+<span class="hl-meta hl-context hl-server hl-nginx"><span class="hl-storage hl-type hl-context hl-nginx">server</span> {
+    <span class="hl-punctuation hl-definition hl-variable"><span class="hl-keyword hl-directive hl-module hl-http hl-nginx">root</span> <span class="hl-variable hl-other hl-nginx">$prerender_root</span>;</span>
+    <span class="hl-punctuation hl-definition hl-variable"><span class="hl-keyword hl-directive hl-module hl-http hl-headers hl-nginx">add_header</span> Vary DP-Partial always;</span>
+    <span class="hl-meta hl-context hl-location hl-nginx"><span class="hl-storage hl-type hl-context hl-location hl-nginx">location</span> <span class="hl-entity hl-name hl-context hl-location hl-nginx">/ </span>{ <span class="hl-punctuation hl-definition hl-variable"><span class="hl-keyword hl-directive hl-module hl-http hl-nginx">try_files</span> <span class="hl-variable hl-other hl-nginx">$uri</span> <span class="hl-variable hl-other hl-nginx">$uri</span>/index.html @full;</span> }</span>
+    <span class="hl-meta hl-context hl-location hl-nginx"><span class="hl-storage hl-type hl-context hl-location hl-nginx">location</span> <span class="hl-entity hl-name hl-context hl-location hl-nginx">@full </span>{ <span class="hl-punctuation hl-definition hl-variable"><span class="hl-keyword hl-directive hl-module hl-http hl-nginx">root</span> …/dist;</span> <span class="hl-punctuation hl-definition hl-variable"><span class="hl-keyword hl-directive hl-module hl-http hl-nginx">try_files</span> <span class="hl-variable hl-other hl-nginx">$uri</span> <span class="hl-variable hl-other hl-nginx">$uri</span>/index.html <span class="hl-constant hl-numeric hl-nginx">=404</span>;</span> }</span>
+}</span>
+</span></code></pre>
+<p>Four details there are load-bearing rather than decorative.</p>
+<ul>
+<li>The match is <code>~*</code> because header values are not the client's to normalise.</li>
+<li><code>Vary</code> is mandatory. Several bodies share one URL, so a cache that saw a
+fragment will otherwise hand it to the next visitor asking for a document.</li>
+<li>A partial request that misses falls through to <code>@full</code> rather than to a 404,
+because a route that exists only at a shallower depth should still answer.</li>
+<li>The 404 page is deliberately not a <code>try_files</code> candidate. When it was, a
+partial request for a missing page got a whole document back and the client
+spliced a second navbar into the page.</li>
+</ul>
+<p>Redirects become exact-match <code>location</code> blocks, which nginx resolves before any
+prefix location, so they cost nothing on the pages that are not redirects.</p>
+<p>The <code>build</code> and <code>nginx</code> commands are not implemented in this repository yet;
+they are prerender's, and depoth passes through to them.</p>
+
+key 7455eda926e06aad864cc3b64838ddb1
+h 2 the-two-clocks The two clocks
+h 2 the-type-is-the-schema The type is the schema
+h 2 compile-templates-do-not-interpret-them Compile templates, do not interpret them
+h 2 propose-dont-choose Propose, don't choose
+h 2 no-backend-ever No backend, ever
+h 2 every-page-works-with-javascript-off Every page works with JavaScript off
+h 2 build-order Build order
+<p>Each decision below was argued and shipped in the Crystal predecessor, which
+reached 0.2.0, 315 specs and one 489-page production site. They are carried
+forward rather than invented here, which is why the reasoning is specific.</p>
+<h2 id="the-two-clocks">The two clocks</h2>
+The two clocks
+<p>A template edit pays for a compile. A content edit re-runs the already-built
+binary. Keeping those on separate clocks is the point of compiling templates at
+all: a content author must never wait for a compiler.</p>
+<p>The open risk in moving to Rust was that the compile clock would leave
+interactive range. It did not. Measured on a thirteen-template probe — a
+layout, control flow, a component call — with a warm <code>target/</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cold build, every dependency</td>
+<td>21.3 s</td>
+</tr>
+<tr>
+<td><strong>Template edit, rebuild</strong></td>
+<td><strong>0.50 s</strong></td>
+</tr>
+<tr>
+<td>No-op rebuild</td>
+<td>0.36 s</td>
+</tr>
+<tr>
+<td><strong>Re-run the built binary</strong></td>
+<td><strong>0.16 s</strong></td>
+</tr>
+<tr>
+<td>Release build</td>
+<td>49.0 s</td>
+</tr>
+</tbody>
+</table>
+<p>A template edit is four times faster than the Crystal predecessor's 2.0 s,
+because the heavy dependencies — comrak, oxc, syntect — compile once and only
+the leaf crate recompiles. No fallback is needed and the design stands as
+written.</p>
+<p>Two caveats stay on the record. Codegen scales with template count, so 0.50 s
+is a thirteen-template number and must be re-measured at the size of a real
+site. And the release build is 49 s, which is a deploy cost — but it is the
+reason <code>--release</code> is never the default for development.</p>
+<h2 id="the-type-is-the-schema">The type is the schema</h2>
+The type is the schema
+<p>A page's frontmatter is deserialised into a Rust struct. The struct is the
+schema; there is no schema file.</p>
+<p>Generating structs from a schema file is circular: reading the schema means
+compiling it, and its output is what needs compiling. Deriving instead gives
+coercion, defaults and error messages for free, and an unknown key is rejected
+by the same derive that reads the known ones. A typo that is quietly ignored
+costs more time than any error message does.</p>
+<h2 id="compile-templates-do-not-interpret-them">Compile templates, do not interpret them</h2>
+Compile templates, do not interpret them
+<p>An interpreter is a second, weaker implementation of a compiler that already
+exists. See <a href="/docs/layouts">Layouts</a> for what that buys and what it costs.</p>
+<h2 id="propose-dont-choose">Propose, don't choose</h2>
+Propose, don't choose
+<p>Choosing a CSS framework or a bundler is the site's decision, not the
+framework's. depoth offers a pre-build command hook and stays out of what you
+run in it. Grep the Crystal source for &quot;tailwind&quot; and you get nothing; this
+documentation site uses Tailwind, and the framework does not know it exists.</p>
+<p>The same rule applies to markdown extension, ranked by blast radius: a render
+hook first, because it takes markup out of every document at once, and a
+component call inside a document last.</p>
+<h2 id="no-backend-ever">No backend, ever</h2>
+No backend, ever
+<p>The output is files. No request handling, no compute at request time. That
+constraint is what makes partial navigation prerendered rather than served —
+every form of every page is written at build time, and the server only chooses
+between them.</p>
+<p>It is also why there is no interactive API playground: that needs a server to
+proxy requests, and we do not have one. It degrades to a copyable endpoint.</p>
+<h2 id="every-page-works-with-javascript-off">Every page works with JavaScript off</h2>
+Every page works with JavaScript off
+<p>A fragment is never the only representation of a page. This is a test, not a
+guideline — and it is the same property that makes <code>--no-partials</code> a one-line
+change rather than a second rendering path.</p>
+<h2 id="build-order">Build order</h2>
+Build order
+<p>Navigation lists slugs only; every title comes from the page's own frontmatter.
+That means the sidebar cannot be built until all content is loaded, which fixes
+the order: discover content, read frontmatter, resolve navigation, render.</p>
+
+key 76a5a9e2f1181fc7e1b40585c0bd08a0
+h 2 requirements Requirements
+h 2 a-new-site A new site
+h 2 the-layout-of-a-site The layout of a site
+h 2 building Building
+<p>A depoth site is a Rust crate. There is no <code>depoth</code> binary to install on your
+machine and no theme to download. You create a crate, add three dependencies,
+and the crate builds your site.</p>
+<h2 id="requirements">Requirements</h2>
+Requirements
+<p>A Rust toolchain. The workspace declares a minimum of 1.97, which is what the
+dependency tree requires: <code>oxc_parser</code> 0.153 asks for 1.97 and edition 2024,
+and <code>comrak</code> 0.55 asks for 1.85.</p>
+<p>Pin the toolchain for the project. <code>rsx</code> compiles templates in a procedural
+macro, and its macro artifacts are not compatible across patch releases of
+rustc. Two different rustc on <code>PATH</code> compile the host half and the target half
+differently, which fails in a way that does not name the cause.</p>
+<pre class="hl"><code class="language-toml"><span class="hl-source hl-toml"><span class="hl-comment hl-line hl-number-sign hl-toml"><span class="hl-punctuation hl-definition hl-comment hl-toml">#</span> mise.toml</span>
+<span class="hl-punctuation hl-definition hl-table hl-begin hl-toml">[</span><span class="hl-meta hl-tag hl-table hl-toml"><span class="hl-entity hl-name hl-table hl-toml">tools</span></span><span class="hl-punctuation hl-definition hl-table hl-end hl-toml">]</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">rust</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>1.98<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span>
+</span></code></pre>
+<h2 id="a-new-site">A new site</h2>
+A new site
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> new<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>bin</span> my-site</span>
+<span class="hl-meta hl-function-call hl-shell"><span class="hl-support hl-function hl-cd hl-shell">cd</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> my-site</span>
+</span></code></pre>
+<p>Add the three dependencies. All three are git dependencies today; none is
+published to crates.io yet.</p>
+<pre class="hl"><code class="language-toml"><span class="hl-source hl-toml"><span class="hl-comment hl-line hl-number-sign hl-toml"><span class="hl-punctuation hl-definition hl-comment hl-toml">#</span> Cargo.toml</span>
+<span class="hl-punctuation hl-definition hl-table hl-begin hl-toml">[</span><span class="hl-meta hl-tag hl-table hl-toml"><span class="hl-entity hl-name hl-table hl-toml">dependencies</span></span><span class="hl-punctuation hl-definition hl-table hl-end hl-toml">]</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">depoth</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/depoth.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">prerender</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/prerender.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">rsx</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/rsx.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+</span></code></pre>
+<p><code>depoth</code> reads the configuration, the navigation and the content. <code>rsx</code>
+compiles your <code>.rsx</code> templates into the binary. <code>prerender</code> renders each route
+as a document and as its partial trees, and writes them to disk.</p>
+<h2 id="the-layout-of-a-site">The layout of a site</h2>
+The layout of a site
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">my-site/
+  Cargo.toml
+  depoth.yaml      the site&#39;s identity, directories and navigation
+  content/         markdown documents
+  src/
+    main.rs
+    views/         .rsx templates, compiled into the binary
+  assets/          stylesheets and scripts
+  public/          copied verbatim
+</span></code></pre>
+<p><code>content</code>, <code>dist</code>, <code>public</code> and <code>assets</code> are the defaults. Every one of them is
+a configuration key, so you can move them. See
+<a href="/docs/configuration">Configuration</a>.</p>
+<h2 id="building">Building</h2>
+Building
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build</span>
+</span></code></pre>
+<p>The first build compiles every dependency and takes about 21 seconds on a cold
+<code>target/</code>. After that a template edit rebuilds in about half a second, and a
+content edit does not rebuild at all — it re-runs the binary you already have.
+<a href="/docs/design-notes">Design notes</a> has the measurements.</p>
+<p>The build command is not implemented in this repository yet; the crate today
+carries the configuration parser, the navigation model and the frontmatter
+splitter.</p>
+

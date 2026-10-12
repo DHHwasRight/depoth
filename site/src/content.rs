@@ -7,8 +7,10 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
+use depoth::cache::RenderCache;
 use depoth::config::Config;
 use depoth::frontmatter;
+use depoth::images::{self, Size};
 use depoth::nav::{self, Entry};
 use serde::Deserialize;
 
@@ -47,9 +49,24 @@ pub fn base_path() -> &'static str {
     env!("DEPOTH_BASE")
 }
 
+/// Everything that can change rendered output, hashed into the cache key.
+///
+/// Anything left out is a correctness bug waiting for the day someone changes
+/// it: the cache would serve output produced by a renderer that no longer
+/// exists.
+fn render_signature() -> String {
+    let mut names: Vec<&str> = crate::mdx::component_names();
+    names.sort_unstable();
+    format!("v1|base={}|components={}", base_path(), names.join(","))
+}
+
 /// Reads every `.md` under `root`, keyed by slug.
 pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
+    let cache_path = RenderCache::default_path(root.parent().unwrap_or(root));
+    let mut cache = RenderCache::load(&cache_path, render_signature());
+    let sizes = image_sizes(root);
     let mut docs = BTreeMap::new();
+    let mut unresolved = Vec::new();
     let mut stack = vec![root.to_path_buf()];
     while let Some(dir) = stack.pop() {
         if !dir.exists() {
@@ -67,11 +84,21 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
             let source = std::fs::read_to_string(&path)?;
             let split = frontmatter::split(&source);
             let front: Front = frontmatter::parse(&split, &path)?;
-            let rendered = depoth::markdown::render_with(split.body, &crate::mdx::components())
-                .map_err(|e| LoadError::Call {
-                    path: path.display().to_string(),
-                    source: e,
-                })?;
+            // Look first, render only on a miss, store only a success: a
+            // cache must never hold a failure, and rendering before the
+            // lookup would make it pure overhead.
+            let rendered = match cache.get(split.body) {
+                Some(hit) => hit,
+                None => {
+                    let out = depoth::markdown::render_with(split.body, &crate::mdx::components())
+                        .map_err(|e| LoadError::Call {
+                            path: path.display().to_string(),
+                            source: e,
+                        })?;
+                    cache.insert(split.body, &out);
+                    out
+                }
+            };
 
             let rel = path
                 .strip_prefix(root)
@@ -79,17 +106,20 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
                 .with_extension("");
             let slug = rel.to_string_lossy().replace('\\', "/");
             let slug = slug.strip_suffix("/index").unwrap_or(&slug).to_string();
+            let url = format!("{}/{slug}", base_path());
+            // The author writes /docs/navigation; where the site is deployed
+            // is not their problem.
+            let html = depoth::markdown::rebase(&rendered.html, base_path());
+            let html = images::annotate(&html, &url, &sizes, &mut unresolved);
             docs.insert(
                 slug.clone(),
                 Doc {
-                    url: format!("{}/{slug}", base_path()),
+                    url,
                     slug,
                     title: front.title,
                     description: front.description,
                     sidebar_title: front.sidebar_title,
-                    // The author writes /docs/navigation; where the site is
-                    // deployed is not their problem.
-                    html: depoth::markdown::rebase(&rendered.html, base_path()),
+                    html,
                     source: source.clone(),
                     headings: rendered
                         .headings
@@ -104,7 +134,34 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
             );
         }
     }
+    for miss in &unresolved {
+        eprintln!(
+            "warning: {}: image {:?} was not found",
+            miss.page_url, miss.src
+        );
+    }
+    let (hits, misses) = cache.stats();
+    if hits + misses > 0 {
+        eprintln!("rendered {misses} pages, {hits} from cache");
+    }
+    let _ = cache.save(&cache_path);
     Ok(docs)
+}
+
+/// Intrinsic sizes for every image beside the content, keyed by published URL.
+fn image_sizes(root: &Path) -> std::collections::HashMap<String, Size> {
+    let mut out = std::collections::HashMap::new();
+    for asset in images::colocated(root, base_path()).unwrap_or_default() {
+        if let Some(size) = images::size(&asset.source) {
+            out.insert(asset.url, size);
+        }
+    }
+    out
+}
+
+/// Every file beside the content, for the caller to publish.
+pub fn colocated_assets(root: &Path) -> Vec<images::Asset> {
+    images::colocated(root, base_path()).unwrap_or_default()
 }
 
 /// Everything the layout needs for one page.

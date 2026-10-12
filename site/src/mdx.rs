@@ -55,3 +55,21 @@ fn escape(s: &str) -> String {
         .replace('<', "&lt;")
         .replace('>', "&gt;")
 }
+
+/// The names a document may call, for the render cache's signature. A
+/// component added or removed changes the output of pages that use it.
+pub fn component_names() -> Vec<&'static str> {
+    let mut names: Vec<&'static str> = CALLOUTS.iter().map(|(tag, _, _)| *tag).collect();
+    names.extend(["Tabs", "Tab"]);
+    names
+}
+
+#[cfg(test)]
+mod probe {
+    #[test]
+    fn probe_fence_output() {
+        let src = "```rust title=\"Cargo.toml\"\nfn main() {}\n```\n\n```\nplain\n```\n\n```json\n{}\n```\n";
+        let r = depoth::markdown::render(src);
+        println!("---\n{}\n---", r.html);
+    }
+}
