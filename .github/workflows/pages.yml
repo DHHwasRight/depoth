@@ -1,10 +1,13 @@
 name: Documentation
 
-# The site is the end-to-end test, so this builds it and runs the harness
-# against the artefact it is about to publish rather than a different one.
+# What changed decides what runs. The framework's own design splits a build
+# into two clocks -- a template edit pays a compiler, a content edit re-runs an
+# already-built binary -- and CI can take the same split: a pull request that
+# edits one markdown file has no reason to run clippy or Playwright.
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -13,46 +16,188 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  # Per ref, so a push to main does not cancel a colleague's pull request.
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+  # Cuts the artefacts cargo writes and so the cache, and CI never runs a
+  # debugger over them.
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_INCREMENTAL: "0"
+  DEPOTH_BASE: /depoth
+
 jobs:
-  build:
+  changes:
     runs-on: ubuntu-latest
-    env:
-      # GitHub Pages serves a project site under /<repo>/, not at the root.
-      DEPOTH_BASE: /depoth
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+      css: ${{ steps.filter.outputs.css }}
+      content: ${{ steps.filter.outputs.content }}
+      browser: ${{ steps.filter.outputs.browser }}
     steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            rust:
+              - 'crates/**'
+              - 'site/src/**'
+              - 'site/build.rs'
+              - '**/Cargo.toml'
+              - 'Cargo.lock'
+              - 'rust-toolchain*'
+              - '.github/workflows/**'
+            css:
+              - 'site/assets/css/**'
+              - 'site/src/views/**'
+              - 'site/package.json'
+              - 'site/package-lock.json'
+            content:
+              - 'site/content/**'
+              - 'site/depoth.yaml'
+              - 'site/public/**'
+            browser:
+              - 'site/src/views/**'
+              - 'site/assets/css/**'
+              - 'site/tests/**'
+              - 'site/playwright.config.ts'
 
-      # Pinned, because rsx's proc-macro artifacts are not compatible across
-      # patch releases and a mismatch fails with an error that names the wrong
-      # crate.
+  # Correctness of the framework itself. Skipped entirely when a change only
+  # touches prose, because no Rust can behave differently.
+  rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          # Pinned: rsx's proc-macro artifacts are not compatible across patch
+          # releases, and a mismatch fails naming the wrong crate.
+          toolchain: "1.98"
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: build
+          # The site binary is cached by the build job under the same key.
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+
+  build:
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.98"
       - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: build
 
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # The stylesheet is an input to every page, so a content-only change can
+      # reuse the last one. Keyed on the files that can change it.
+      - uses: actions/cache@v4
+        id: css
+        with:
+          path: site/assets/css/site.css
+          key: css-${{ hashFiles('site/assets/css/*.css', 'site/src/views/**', 'site/package-lock.json') }}
 
       - name: Build the stylesheet
+        if: steps.css.outputs.cache-hit != 'true'
         working-directory: site
-        run: npm install && npm run css
+        run: npm ci && npm run css
 
       - name: Build the site
         run: cargo run --release -p depoth-site -- build --no-partials --out site/dist
 
+      # The harness checks the artefact that is about to ship, not a different
+      # one: same base path, same bytes.
       - name: Check the built site
-        run: cargo test -p depoth-test
+        run: cargo test -p depoth-test --test site
 
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: site/dist
+          retention-days: 1
+
+  # Layout at a breakpoint, a visible focus ring, a theme that actually
+  # repaints: the claims that are not in the markup. Everything else is checked
+  # in Rust in ten milliseconds, so this runs only when the look can change.
+  browser:
+    needs: [changes, build]
+    if: needs.changes.outputs.browser == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: site/dist
+
+      # Browsers are ~400MB; the version is pinned by package-lock, so the key
+      # is too.
+      - uses: actions/cache@v4
+        id: browsers
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('site/package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+        if: steps.browsers.outputs.cache-hit != 'true'
+        working-directory: site
+      - run: npx playwright install-deps chromium
+        if: steps.browsers.outputs.cache-hit == 'true'
+        working-directory: site
+
+      - name: Run the browser suite
+        working-directory: site
+        # The site is already built; serve what the build job produced.
+        env:
+          SKIP_BUILD: "1"
+        # Visual baselines are platform-specific and only macOS ones exist, so
+        # they are excluded rather than left to fail on every run. Record Linux
+        # baselines in a container and drop this flag.
+        run: npx playwright test --grep-invert baseline
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: site/playwright-report
+          retention-days: 7
 
   deploy:
-    needs: build
+    needs: [build, rust, browser]
+    # A skipped job is not a failed one, so a content-only change still
+    # deploys; a failed one stops it.
+    if: |
+      github.ref == 'refs/heads/main' &&
+      !cancelled() &&
+      needs.build.result == 'success' &&
+      needs.rust.result != 'failure' &&
+      needs.browser.result != 'failure'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
