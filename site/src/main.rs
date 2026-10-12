@@ -16,6 +16,7 @@ use std::rc::Rc;
 
 use depoth::config::Config;
 use depoth::feeds;
+use depoth::search;
 use rsx::Template;
 
 fn read(path: &Path) -> String {
@@ -88,6 +89,41 @@ fn main() -> ExitCode {
             hidden: false,
         })
         .collect();
+    // Built from the rendered pages, so a hit's anchor is an id the markup
+    // actually carries rather than one re-derived from the text.
+    let heads: Vec<Vec<depoth::markdown::Heading>> = entries
+        .iter()
+        .filter_map(|e| docs.get(&e.slug))
+        .map(|d| {
+            d.headings
+                .iter()
+                .map(|h| depoth::markdown::Heading {
+                    level: h.level,
+                    id: h.id.clone(),
+                    text: h.text.clone(),
+                })
+                .collect()
+        })
+        .collect();
+    let search_pages: Vec<search::Page<'_>> = entries
+        .iter()
+        .filter_map(|e| docs.get(&e.slug))
+        .zip(heads.iter())
+        .map(|(d, headings)| search::Page {
+            url: &d.url,
+            title: &d.title,
+            description: d.description.as_deref(),
+            html: &d.html,
+            headings,
+        })
+        .collect();
+    let index = search::Index::build(&search_pages);
+    site = site.static_file("/search-index.json", index.to_json());
+    site = site.static_file(
+        "/assets/js/search.js",
+        read(&root.join("assets/js/search.js")),
+    );
+
     if let Some(xml) = feeds::sitemap(&config.base_url, &feed_pages) {
         site = site.static_file("/sitemap.xml", xml);
     }

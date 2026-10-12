@@ -1,0 +1,524 @@
+/* The documentation components, for the parts `site/src/mdx.rs` cannot say.
+ *
+ * This is the second half of `docs.css`, not a second system: the callouts
+ * live there, everything a document calls by name lives here, and both obey
+ * the same two rules. No hex value appears below -- every colour is a token
+ * from `theme.css`, so a palette change is a change there and nowhere else.
+ * And nothing here needs JavaScript: a tab strip is a radio group, a
+ * disclosure is `<details>`, and a step's number is a counter the browser
+ * keeps. The site is published with its scripts optional and a test enforces
+ * it, so a component that only works once a bundle has loaded is a component
+ * that does not work.
+ */
+
+/* ------------------------------------------------------------------ Frame */
+
+/* A screenshot in a mount: a hairline, a little padding, and the page's own
+ * surface behind it so a transparent PNG does not float. */
+.mdx-frame {
+  margin: 0;
+}
+
+.mdx-frame__hint {
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--color-ink-soft);
+}
+
+.mdx-frame__media {
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  padding: 8px;
+}
+
+/* comrak wraps a lone image in a paragraph; the mount provides the spacing. */
+.mdx-frame__media > p {
+  margin: 0;
+}
+
+.mdx-frame__media :is(img, video) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.mdx-frame__caption {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--color-ink-soft);
+}
+
+/* -------------------------------------------------------------- tab strips */
+
+/* `Tabs` and `CodeGroup` are the same widget with different labels.
+ *
+ * The control is a radio group. One of N is selected, the arrow keys move
+ * between them, and the browser does all of it -- which is the only way a tab
+ * strip can work on a page whose scripts never load. The inputs are moved out
+ * of sight rather than hidden, because `display: none` would take them out of
+ * the tab order and out of the a11y tree with it.
+ */
+.mdx-tabs {
+  --tabs-radius: 12px;
+}
+
+.mdx-tabs__list {
+  /* Shown only where `:has()` works. Without it the panels are all visible
+   * and a strip that switched nothing would be a lie. */
+  display: none;
+  position: relative;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.mdx-tabs__input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mdx-tabs__tab {
+  cursor: pointer;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.mdx-tabs--code .mdx-tabs__tab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.mdx-tabs__tab:hover {
+  color: var(--color-ink);
+}
+
+.mdx-tabs__input:checked + .mdx-tabs__tab {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-ink);
+}
+
+/* The ring belongs on the thing the reader can see, not on the 1px input. */
+.mdx-tabs__input:focus-visible + .mdx-tabs__tab {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+/* The selected state, for a reader who cannot see the underline.
+ *
+ * `aria-selected` is not written by the renderer, because CSS cannot keep an
+ * attribute true and a stale one is worse than none. This word is in the tab's
+ * accessible name instead, and it is `display: none` until the tab is checked
+ * -- hidden text is left out of the name, so only the selected tab says it.
+ */
+.mdx-tabs__state {
+  display: none;
+}
+
+.mdx-tabs__input:checked + .mdx-tabs__tab .mdx-tabs__state {
+  display: inline;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mdx-tabs__panel {
+  padding-top: 16px;
+}
+
+.mdx-tabs__panel > * + * {
+  margin-top: 16px;
+}
+
+.mdx-tabs__panel:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* A `CodeGroup` is one panel with the tabs sitting on its lid. */
+.mdx-tabs--code .mdx-tabs__list {
+  border-bottom: 0;
+  gap: 0;
+}
+
+.mdx-tabs--code .mdx-tabs__panel {
+  padding-top: 4px;
+}
+
+.mdx-tabs--code .mdx-tabs__panel > :is(pre, .code-block) {
+  margin: 0;
+}
+
+/* Which panel is open.
+ *
+ * `:has()` reads the state of the widget's own inputs, so the rule never
+ * reaches past one `.mdx-tabs` -- a strip inside a panel of another strip is
+ * switched by its own radios and nothing else. Before `:has()` every panel
+ * stays visible, which is a worse layout and a complete page.
+ */
+@supports selector(:has(*)) {
+  .mdx-tabs__list {
+    display: flex;
+  }
+
+  .mdx-tabs__panel {
+    display: none;
+  }
+
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(1):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(1),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(2):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(2),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(3):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(3),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(4):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(4),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(5):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(5),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(6):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(6),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(7):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(7),
+  .mdx-tabs:has(> .mdx-tabs__list > .mdx-tabs__input:nth-of-type(8):checked)
+    > .mdx-tabs__panels
+    > .mdx-tabs__panel:nth-of-type(8) {
+    display: block;
+  }
+}
+
+/* A `Tab` that was written outside a `Tabs` still has to read. */
+.mdx-tab {
+  display: block;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.mdx-cards {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Two steps rather than four: a four-column grid of cards at 700px is four
+ * columns of one word each. */
+@media (min-width: 640px) {
+  .mdx-cards[data-cols="2"],
+  .mdx-cards[data-cols="3"],
+  .mdx-cards[data-cols="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .mdx-cards[data-cols="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mdx-cards[data-cols="4"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.mdx-card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-ground);
+  padding: 20px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+/* Only a card that leads somewhere reacts to the pointer. */
+.mdx-card:has(.mdx-card__link):hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.mdx-card__icon {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.mdx-card__title {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+/* The link is on the title and stretched over the card by its own
+ * pseudo-element. An `<a>` around the whole card would put every link in the
+ * body inside a link, which no browser can resolve and no keyboard can
+ * reach. */
+.mdx-card__link {
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.mdx-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.mdx-card__link:focus-visible::after {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.mdx-card__body {
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--color-ink-soft);
+}
+
+.mdx-card__body:empty {
+  display: none;
+}
+
+.mdx-card__body > * + * {
+  margin-top: 8px;
+}
+
+/* Whatever the body holds stays above the stretched link, so a nested card,
+ * a link or a disclosure is still clickable. */
+.mdx-card__body :is(a, button, summary, label, input, details) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Horizontal: the icon and the title share a line, the body runs full width
+ * underneath. Stated by placement rather than by a second element, so a card
+ * with no icon still lines up. */
+.mdx-card--horizontal {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 12px;
+}
+
+.mdx-card--horizontal > .mdx-card__icon {
+  grid-area: 1 / 1;
+  align-self: center;
+}
+
+.mdx-card--horizontal > .mdx-card__title {
+  grid-area: 1 / 2;
+  align-self: center;
+}
+
+.mdx-card--horizontal > .mdx-card__body {
+  grid-column: 1 / -1;
+}
+
+/* -------------------------------------------------------------- accordions */
+
+.mdx-accordions {
+  display: grid;
+  gap: 8px;
+}
+
+.mdx-accordion {
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-ground);
+}
+
+/* A link into a section the reader cannot see yet. Current browsers open a
+ * `<details>` when a fragment lands inside it; the ring says which one. */
+.mdx-accordion:target {
+  border-color: var(--color-accent);
+}
+
+.mdx-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 11px;
+  padding: 14px 18px;
+  color: var(--color-ink);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  /* Both spellings: one retires the default triangle, the other retires
+   * WebKit's. */
+  list-style: none;
+}
+
+.mdx-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The chevron is drawn, not shipped: two borders and a rotation beat an icon
+ * file for a shape this small. */
+.mdx-accordion__summary::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-left: 2px;
+  border-right: 1.5px solid var(--color-ink-soft);
+  border-bottom: 1.5px solid var(--color-ink-soft);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.mdx-accordion[open] > .mdx-accordion__summary::before {
+  transform: rotate(45deg);
+}
+
+.mdx-accordion__summary:hover {
+  background: var(--color-surface);
+}
+
+.mdx-accordion__body {
+  padding: 0 18px 18px 35px;
+}
+
+.mdx-accordion__body > * + * {
+  margin-top: 12px;
+}
+
+/* ------------------------------------------------------------------ steps */
+
+/* An ordered list, so the numbering is the browser's and a procedure inside
+ * the second tab still starts at one. `display: list-item` is what increments
+ * `list-item`, so nothing below may change the display of a step. */
+.mdx-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mdx-steps > .mdx-step {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 28px 40px;
+}
+
+.mdx-steps > .mdx-step:last-child {
+  padding-bottom: 0;
+}
+
+.mdx-step::before {
+  content: counter(list-item);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The rail between one chip and the next. The last step has nothing to join
+ * to, which is also how a reader knows the procedure ended. */
+.mdx-step::after {
+  content: "";
+  position: absolute;
+  top: 32px;
+  bottom: 8px;
+  left: 13px;
+  width: 1px;
+  background: var(--color-line);
+}
+
+.mdx-step:last-child::after {
+  display: none;
+}
+
+.mdx-step__title {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  margin: 0 0 8px;
+  color: var(--color-ink);
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.mdx-step__body > * + * {
+  margin-top: 12px;
+}
+
+/* ---------------------------------------------------- nested code panels */
+
+/* `docs.css` paints the panel on `.prose > pre`, which a sample inside a tab,
+ * a step, an accordion or a card is not. Same declarations, same tokens: the
+ * panel stays dark in both themes because the inversion is what makes code
+ * scannable, and a sample does not change colour for being in a box. */
+:is(
+    .mdx-tabs__panel,
+    .mdx-step__body,
+    .mdx-accordion__body,
+    .mdx-card__body
+  )
+  > pre {
+  margin: 0;
+  border-radius: 12px;
+  background: var(--color-paper-950);
+  color: var(--color-paper-100);
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+/* ---------------------------------------------------------------- motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .mdx-tabs__tab,
+  .mdx-card,
+  .mdx-accordion__summary::before {
+    transition: none;
+  }
+}

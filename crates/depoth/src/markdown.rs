@@ -194,6 +194,7 @@ fn render_plain(source: &str) -> Rendered {
     let mut html = String::new();
     comrak::format_html_with_plugins(root, &opts, &mut html, &plugins)
         .expect("writing to a String cannot fail");
+    let html = inject_heading_ids(&html, &headings);
     Rendered { html, headings }
 }
 
@@ -211,30 +212,67 @@ fn collect_headings<'a>(node: &'a AstNode<'a>, anchors: &mut Anchors, out: &mut 
             Some(level) => {
                 let text = child.collect_text();
                 let id = anchors.id_for(&text);
-                out.push(Heading {
-                    level,
-                    id: id.clone(),
-                    text,
-                });
-                set_heading_id(child, level, &id);
+                out.push(Heading { level, id, text });
             }
             None => collect_headings(child, anchors, out),
         }
     }
 }
 
-/// Replaces a heading with raw HTML carrying its `id`.
+/// Injects the collected ids into the rendered headings, in document order.
 ///
-/// Rendering the text rather than the inline children is deliberate: a
-/// heading's id comes from its text, and a link inside a heading has nowhere
-/// useful to go.
-fn set_heading_id<'a>(node: &'a AstNode<'a>, level: u8, id: &str) {
-    let text = node.collect_text();
-    let mut data = node.data.borrow_mut();
-    data.value = NodeValue::HtmlBlock(comrak::nodes::NodeHtmlBlock {
-        block_type: 6,
-        literal: format!("<h{level} id=\"{id}\">{}</h{level}>\n", html_escape(&text)),
-    });
+/// The earlier approach replaced each heading node with raw HTML. That had to
+/// render the heading's *text*, which silently dropped inline formatting --
+/// a documentation site writes `## The `build` command` constantly -- and,
+/// because changing a node's value does not detach its children, comrak
+/// rendered both and every heading appeared twice.
+///
+/// Rewriting the opening tag afterwards keeps the children exactly as comrak
+/// produced them. Headings come out in the same order they were walked, and a
+/// `<h2` only ever appears in the output as a real tag, since a heading
+/// written inside a fence is escaped.
+fn inject_heading_ids(html: &str, headings: &[Heading]) -> String {
+    let mut out = String::with_capacity(html.len() + headings.len() * 16);
+    let mut rest = html;
+    let mut next = headings.iter();
+    while let Some(at) = find_heading_tag(rest) {
+        let (before, from) = rest.split_at(at);
+        out.push_str(before);
+        let close = match from.find('>') {
+            Some(n) => n,
+            None => break,
+        };
+        match next.next() {
+            Some(heading) => {
+                out.push_str(&from[..close]);
+                out.push_str(&format!(" id=\"{}\"", html_escape(&heading.id)));
+                out.push('>');
+            }
+            None => out.push_str(&from[..=close]),
+        }
+        rest = &from[close + 1..];
+    }
+    out.push_str(rest);
+    out
+}
+
+/// The next `<h1>`..`<h6>` opening tag.
+fn find_heading_tag(html: &str) -> Option<usize> {
+    let mut from = 0;
+    while let Some(rel) = html[from..].find('<') {
+        let at = from + rel;
+        let bytes = html.as_bytes();
+        if bytes.get(at + 1) == Some(&b'h')
+            && bytes.get(at + 2).is_some_and(|c| (b'1'..=b'6').contains(c))
+            && bytes
+                .get(at + 3)
+                .is_some_and(|c| *c == b'>' || c.is_ascii_whitespace())
+        {
+            return Some(at);
+        }
+        from = at + 1;
+    }
+    None
 }
 
 fn html_escape(s: &str) -> String {
@@ -483,5 +521,72 @@ mod component_tests {
         .expect("render");
         assert_eq!(r.headings.len(), 1, "known limit: {:?}", r.headings);
         assert_eq!(r.headings[0].text, "Outside");
+    }
+}
+
+#[cfg(test)]
+mod heading_markup_tests {
+    use super::*;
+
+    #[test]
+    fn a_heading_appears_once_in_the_markup() {
+        // set_heading_id replaces a heading node with raw HTML. If the
+        // inline children are left attached, comrak renders them too and
+        // every heading's text is printed twice.
+        let r = render("## Frontmatter keys\n\nbody\n");
+        assert_eq!(
+            r.html.matches("Frontmatter keys").count(),
+            1,
+            "heading text duplicated: {}",
+            r.html
+        );
+    }
+
+    #[test]
+    fn inline_formatting_in_a_heading_does_not_leak() {
+        let r = render("## A **bold** word\n");
+        // Inline formatting must survive: a documentation site writes
+        // `## The `build` command` constantly.
+        assert!(r.html.contains("<strong>bold</strong>"), "{}", r.html);
+        assert!(r.html.contains(r#"<h2 id="a-bold-word">"#), "{}", r.html);
+        assert_eq!(r.html.matches("<h2").count(), 1, "{}", r.html);
+    }
+}
+
+#[cfg(test)]
+mod heading_injection_tests {
+    use super::*;
+
+    #[test]
+    fn inline_code_in_a_heading_survives() {
+        let r = render("## The `build` command\n");
+        assert!(r.html.contains("<code>build</code>"), "{}", r.html);
+        assert!(r.html.contains(r#"id="the-build-command""#), "{}", r.html);
+    }
+
+    #[test]
+    fn a_heading_written_inside_a_fence_is_not_given_an_id() {
+        // It is escaped in the output, so the tag scanner never sees it --
+        // and if it did, the ids would shift onto the wrong headings.
+        let r = render("```html\n<h2>sample</h2>\n```\n\n## Real\n");
+        assert_eq!(r.headings.len(), 1);
+        assert!(r.html.contains(r#"<h2 id="real">"#), "{}", r.html);
+        assert!(
+            !r.html.contains("<h2>sample"),
+            "fence leaked a tag: {}",
+            r.html
+        );
+    }
+
+    #[test]
+    fn every_heading_level_is_matched() {
+        let r = render("# A\n\n## B\n\n### C\n\n#### D\n\n##### E\n\n###### F\n");
+        for (level, id) in [(1, "a"), (2, "b"), (3, "c"), (4, "d"), (5, "e"), (6, "f")] {
+            assert!(
+                r.html.contains(&format!("<h{level} id=\"{id}\">")),
+                "h{level} missing its id: {}",
+                r.html
+            );
+        }
     }
 }

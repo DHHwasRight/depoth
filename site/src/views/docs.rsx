@@ -18,6 +18,7 @@ const VERSION: &str = "v0.1.0";
 /// `docs.css` and `landing.css`, and the Tailwind build writes the lot to
 /// `assets/css/site.css`, so the page links that file and nothing else.
 const HOME: &str = concat!(env!("DEPOTH_BASE"), "/");
+const SEARCH_JS: &str = concat!(env!("DEPOTH_BASE"), "/assets/js/search.js");
 const SITE_CSS: &str = concat!(env!("DEPOTH_BASE"), "/assets/css/site.css");
 
 // ---------------------------------------------------------------- the page
@@ -34,6 +35,7 @@ pub fn DocsPage(chrome: &Chrome, doc: &Doc) -> Element {
                 <meta name="description" content={description} />
             }
             <link rel="stylesheet" href={SITE_CSS} />
+            <script defer src={SEARCH_JS}></script>
         </head>
 
         // The header is fixed, so the document pays for its own height: two
@@ -158,7 +160,7 @@ pub fn Header(chrome: &Chrome) -> Element {
             </a>
 
             <div class="ml-auto flex items-center gap-1 sm:gap-2">
-                <button type="button" data-search
+                <button type="button" data-search hidden
                         class="flex items-center gap-2 rounded-lg border border-line px-2.5 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-ink-soft hover:text-ink">
                     <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
                         <circle cx="11" cy="11" r="7"></circle>

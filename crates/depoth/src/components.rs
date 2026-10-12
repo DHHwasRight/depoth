@@ -294,8 +294,21 @@ fn find_close(src: &str, name: &str) -> Option<Close> {
     let close = format!("</{name}>");
     let mut depth = 1usize;
     let mut i = 0;
+    // A tag name must end at the opening tag's boundary. Matching by prefix
+    // counts `<Tabs>` as a second `<Tab>`, so the outer call is reported
+    // never closed and the whole region is emitted raw -- and `Tabs` in a
+    // `Tab`, `Steps` in a `Step` and `CardGroup` in a `Card` are all ordinary.
+    let opens_here = |at: usize| {
+        src[at + open.len()..]
+            .chars()
+            .next()
+            .is_none_or(|c| !(c.is_alphanumeric() || c == '_'))
+    };
     while i < src.len() {
-        let next_open = src[i..].find(&open).map(|n| i + n);
+        let next_open = src[i..]
+            .match_indices(&open)
+            .map(|(n, _)| i + n)
+            .find(|at| opens_here(*at));
         let next_close = src[i..].find(&close).map(|n| i + n);
         match (next_open, next_close) {
             (_, None) => return None,
@@ -456,5 +469,36 @@ mod tests {
     #[test]
     fn indentation_shared_by_every_line_is_removed() {
         assert_eq!(dedent("    a\n      b\n\n    c"), "a\n  b\n\nc");
+    }
+}
+
+#[cfg(test)]
+mod boundary_tests {
+    use super::*;
+
+    fn set() -> Components {
+        Components::new()
+            .add("Tab", |_, c| format!("<section>{c}</section>"))
+            .add("Tabs", |_, c| format!("<div class=\"tabs\">{c}</div>"))
+    }
+
+    fn render(s: &str) -> String {
+        expand(s, &set(), &|inner| render(inner).trim().to_string()).expect("expand")
+    }
+
+    #[test]
+    fn a_longer_tag_sharing_a_prefix_does_not_close_the_shorter_one() {
+        // `<Tabs>` inside `<Tab>` was counted as a nested `<Tab>`, so the
+        // outer call was reported never closed and the region was emitted
+        // raw. `Steps` in a `Step` and `CardGroup` in a `Card` are the same
+        // shape, and all three are ordinary documentation markup.
+        let out = render("<Tab>\nouter\n<Tabs>\ninner\n</Tabs>\n</Tab>\n");
+        assert!(out.contains("<section>"), "outer never rendered: {out}");
+        assert!(
+            out.contains("<div class=\"tabs\">"),
+            "inner never rendered: {out}"
+        );
+        assert!(!out.contains("&lt;Tabs&gt;"), "emitted raw: {out}");
+        assert!(!out.contains("<Tabs>"), "emitted raw: {out}");
     }
 }

@@ -6,3 +6,4 @@ dist-partial/
 .DS_Store
 node_modules/
 test-results/
+.depoth/
