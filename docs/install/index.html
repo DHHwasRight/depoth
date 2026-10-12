@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Installing depoth · Depoth</title><meta name="description" content="A site is a Rust crate, so there is nothing to install globally — you add three dependencies and build."><link rel="stylesheet" href="/assets/css/site.css"></head><body class="docs-page bg-ground text-ink font-sans antialiased pt-28 lg:pt-14"><a href="#main-content" class="docs-skip">Skip to content</a><header class="fixed inset-x-0 top-0 z-50 bg-ground"><div class="flex h-14 items-center gap-4 border-b border-line px-4 sm:px-6"><a href="/" class="flex shrink-0 items-center gap-2.5"><span class="text-[15px] font-semibold tracking-tight text-ink">Depoth</span><span class="rounded-full border border-line px-2 py-0.5 text-[12px] leading-5 tabular-nums text-ink-soft">v0.1.0</span></a><div class="ml-auto flex items-center gap-1 sm:gap-2"><button type="button" data-search class="flex items-center gap-2 rounded-lg border border-line px-2.5 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-ink-soft hover:text-ink"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span class="hidden sm:inline">Search docs</span><kbd class="hidden rounded border border-line px-1.5 font-sans text-[11px] leading-5 tabular-nums text-ink-soft sm:inline">⌘K</kbd></button><nav class="hidden items-center gap-1 md:flex" aria-label="Sections"><a href="/docs" class="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-ink" aria-current="page" target="_self">Documentation</a></nav><span class="hidden h-5 w-px bg-line md:block" aria-hidden="true"></span><a href="https://github.com/DHHwasRight/depoth" target="_blank" rel="noreferrer" class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink" aria-label="Source"><svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg></a><a href="https://github.com/DHHwasRight/rsx" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="rsx">rsx</a><a href="https://github.com/DHHwasRight/prerender" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="prerender">prerender</a></div></div><div class="flex h-14 items-center gap-3 border-b border-line px-4 sm:px-6 lg:hidden"><button type="button" data-nav-toggle aria-expanded="false" aria-controls="docs-sidebar" class="-ml-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-surface hover:text-ink"><span class="text-base leading-none" aria-hidden="true">☰</span><span class="sr-only">Open navigation</span></button><nav class="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-soft" aria-label="Breadcrumb"><span class="truncate text-ink">Getting started</span></nav></div></header><div class="lg:grid lg:grid-cols-[288px_40px_minmax(0,1fr)_40px] lg:items-start"><aside id="docs-sidebar" data-sidebar class="docs-sidebar p-6 lg:sticky lg:top-14 lg:max-h-[calc(100dvh-56px)] lg:overflow-y-auto"><nav aria-label="Documentation"><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Getting started</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Overview</a></li><li class="docs-rail__item"><a href="/docs/install" class="docs-rail__link" style="--rail-depth:1" aria-current="page">Install</a></li><li class="docs-rail__item"><a href="/docs/configuration" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Configuration</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Writing</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/content" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Content</a></li><li class="docs-rail__item"><a href="/docs/navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Navigation</a></li><li class="docs-rail__item"><a href="/docs/layouts" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Layouts</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Shipping</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/partial-navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Partial navigation</a></li><li class="docs-rail__item"><a href="/docs/testing" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Testing</a></li><li class="docs-rail__item"><a href="/docs/deploying" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Deploying</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Background</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/design-notes" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Design notes</a></li></ul></div></nav></aside><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div><div class="min-w-0"><div class="mx-auto w-full max-w-[672px] px-4 sm:px-6 xl:max-w-[1024px] xl:grid xl:grid-cols-[minmax(0,1fr)_288px] xl:gap-10 xl:items-start xl:px-0"><main id="main-content" class="min-w-0 py-10 xl:pl-6"><div><p class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-accent">Getting started</p><h1 class="mt-2 text-[30px] leading-9 font-medium tracking-tight text-ink">Installing depoth</h1><p class="mt-6 text-base leading-7 text-ink-soft">A site is a Rust crate, so there is nothing to install globally — you add three dependencies and build.</p></div><div class="prose mt-10"><p>A depoth site is a Rust crate. There is no <code>depoth</code> binary to install on your
+machine and no theme to download. You create a crate, add three dependencies,
+and the crate builds your site.</p>
+<h2 id="requirements">Requirements</h2>
+Requirements
+<p>A Rust toolchain. The workspace declares a minimum of 1.97, which is what the
+dependency tree requires: <code>oxc_parser</code> 0.153 asks for 1.97 and edition 2024,
+and <code>comrak</code> 0.55 asks for 1.85.</p>
+<p>Pin the toolchain for the project. <code>rsx</code> compiles templates in a procedural
+macro, and its macro artifacts are not compatible across patch releases of
+rustc. Two different rustc on <code>PATH</code> compile the host half and the target half
+differently, which fails in a way that does not name the cause.</p>
+<pre class="hl"><code class="language-toml"><span class="hl-source hl-toml"><span class="hl-comment hl-line hl-number-sign hl-toml"><span class="hl-punctuation hl-definition hl-comment hl-toml">#</span> mise.toml</span>
+<span class="hl-punctuation hl-definition hl-table hl-begin hl-toml">[</span><span class="hl-meta hl-tag hl-table hl-toml"><span class="hl-entity hl-name hl-table hl-toml">tools</span></span><span class="hl-punctuation hl-definition hl-table hl-end hl-toml">]</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">rust</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>1.98<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span>
+</span></code></pre>
+<h2 id="a-new-site">A new site</h2>
+A new site
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> new<span class="hl-variable hl-parameter hl-option hl-shell"><span class="hl-punctuation hl-definition hl-parameter hl-shell"> --</span>bin</span> my-site</span>
+<span class="hl-meta hl-function-call hl-shell"><span class="hl-support hl-function hl-cd hl-shell">cd</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> my-site</span>
+</span></code></pre>
+<p>Add the three dependencies. All three are git dependencies today; none is
+published to crates.io yet.</p>
+<pre class="hl"><code class="language-toml"><span class="hl-source hl-toml"><span class="hl-comment hl-line hl-number-sign hl-toml"><span class="hl-punctuation hl-definition hl-comment hl-toml">#</span> Cargo.toml</span>
+<span class="hl-punctuation hl-definition hl-table hl-begin hl-toml">[</span><span class="hl-meta hl-tag hl-table hl-toml"><span class="hl-entity hl-name hl-table hl-toml">dependencies</span></span><span class="hl-punctuation hl-definition hl-table hl-end hl-toml">]</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">depoth</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/depoth.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">prerender</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/prerender.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+<span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">rsx</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-punctuation hl-definition hl-inline-table hl-begin hl-toml">{</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">git</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>https://github.com/DHHwasRight/rsx.git<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span><span class="hl-punctuation hl-separator hl-inline-table hl-toml">,</span> <span class="hl-meta hl-tag hl-key hl-toml"><span class="hl-entity hl-name hl-tag hl-toml">branch</span></span> <span class="hl-punctuation hl-definition hl-key-value hl-toml">=</span> <span class="hl-string hl-quoted hl-double hl-basic hl-toml"><span class="hl-punctuation hl-definition hl-string hl-begin hl-toml">&quot;</span>main<span class="hl-punctuation hl-definition hl-string hl-end hl-toml">&quot;</span></span> <span class="hl-punctuation hl-definition hl-inline-table hl-end hl-toml">}</span>
+</span></code></pre>
+<p><code>depoth</code> reads the configuration, the navigation and the content. <code>rsx</code>
+compiles your <code>.rsx</code> templates into the binary. <code>prerender</code> renders each route
+as a document and as its partial trees, and writes them to disk.</p>
+<h2 id="the-layout-of-a-site">The layout of a site</h2>
+The layout of a site
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">my-site/
+  Cargo.toml
+  depoth.yaml      the site&#39;s identity, directories and navigation
+  content/         markdown documents
+  src/
+    main.rs
+    views/         .rsx templates, compiled into the binary
+  assets/          processed and fingerprinted
+  public/          copied verbatim
+</span></code></pre>
+<p><code>content</code>, <code>dist</code>, <code>public</code> and <code>assets</code> are the defaults. Every one of them is
+a configuration key, so you can move them. See
+<a href="/docs/configuration">Configuration</a>.</p>
+<h2 id="building">Building</h2>
+Building
+<pre class="hl"><code class="language-sh"><span class="hl-source hl-shell hl-bash"><span class="hl-meta hl-function-call hl-shell"><span class="hl-variable hl-function hl-shell">cargo</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> run<span class="hl-keyword hl-operator hl-end-of-options hl-shell"> --</span></span><span class="hl-meta hl-function-call hl-arguments hl-shell"> build</span>
+</span></code></pre>
+<p>The first build compiles every dependency and takes about 21 seconds on a cold
+<code>target/</code>. After that a template edit rebuilds in about half a second, and a
+content edit does not rebuild at all — it re-runs the binary you already have.
+<a href="/docs/design-notes">Design notes</a> has the measurements.</p>
+<p>The build command is not implemented in this repository yet; the crate today
+carries the configuration parser, the navigation model and the frontmatter
+splitter.</p>
+</div><nav class="mt-16 grid gap-3 border-t border-line pt-8 sm:grid-cols-2" aria-label="Pagination"><a href="/docs" rel="prev" class="flex flex-col gap-1 rounded-xl border border-line px-4 py-3 text-[13px] leading-5 text-ink-soft transition-colors hover:border-accent hover:bg-surface"><span>Previous</span><span class="font-semibold text-ink">What depoth is</span></a><a href="/docs/configuration" rel="next" class="flex flex-col gap-1 rounded-xl border border-line px-4 py-3 text-[13px] leading-5 text-ink-soft transition-colors hover:border-accent hover:bg-surface sm:items-end sm:text-right"><span>Next</span><span class="font-semibold text-ink">Configuration</span></a></nav></main><aside class="hidden xl:block xl:sticky xl:top-14 xl:max-h-[calc(100dvh-56px)] xl:overflow-y-auto xl:py-10 xl:pr-6"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">On this page</h2><nav class="mt-2" aria-label="On this page"><ul class="docs-rail"><li class="docs-rail__item"><a href="#requirements" class="docs-rail__link">Requirements</a></li><li class="docs-rail__item"><a href="#a-new-site" class="docs-rail__link">A new site</a></li><li class="docs-rail__item"><a href="#the-layout-of-a-site" class="docs-rail__link">The layout of a site</a></li><li class="docs-rail__item"><a href="#building" class="docs-rail__link">Building</a></li></ul></nav></aside></div><footer class="mx-auto w-full max-w-[672px] border-t border-line px-4 py-8 text-[13px] leading-5 text-ink-soft sm:px-6 xl:max-w-[1024px] xl:px-0"><div class="flex flex-wrap items-center gap-x-4 gap-y-2 xl:pl-6"><span>Depoth</span><span class="text-line" aria-hidden="true">·</span><span>v0.1.0</span><a href="https://github.com/DHHwasRight/depoth" class="transition-colors hover:text-ink">Source</a><a href="https://github.com/DHHwasRight/rsx" class="transition-colors hover:text-ink">rsx</a><a href="https://github.com/DHHwasRight/prerender" class="transition-colors hover:text-ink">prerender</a></div></footer></div><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div></div><button type="button" class="docs-scrim lg:hidden" data-sidebar-close tabindex="-1" aria-label="Close"></button><script>
+(function () {
+  var root = document.documentElement;
+
+  // The navigation sheet. State lives on <html> so CSS alone can position
+  // the sidebar, the scrim and the page behind them.
+  var toggle = document.querySelector('[data-nav-toggle]');
+  function setNav(open) {
+    root.setAttribute('data-nav', open ? 'open' : 'closed');
+    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      setNav(root.getAttribute('data-nav') !== 'open');
+    });
+  }
+  document.querySelectorAll('[data-sidebar-close]').forEach(function (el) {
+    el.addEventListener('click', function () { setNav(false); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setNav(false);
+  });
+  var sidebar = document.getElementById('docs-sidebar');
+  if (sidebar) {
+    sidebar.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNav(false);
+    });
+  }
+
+  // Code blocks. Markdown gives us a bare <pre><code>; the chrome around it
+  // is progressive enhancement, so the panel still reads without script.
+  document.querySelectorAll('.prose pre').forEach(function (pre) {
+    if (pre.closest('.code-block')) return;
+
+    var figure = document.createElement('figure');
+    figure.className = 'code-block';
+    pre.parentNode.insertBefore(figure, pre);
+
+    var bar = document.createElement('figcaption');
+    bar.className = 'code-block__bar';
+
+    var code = pre.querySelector('code');
+    var name = pre.getAttribute('data-filename') || '';
+    if (!name && code) {
+      var match = /(?:language|lang)-([\w+#-]+)/.exec(code.className || '');
+      if (match) name = match[1];
+    }
+    bar.appendChild(document.createTextNode(name));
+
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'code-block__copy';
+    copy.setAttribute('aria-label', 'Copy code');
+    copy.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h8"></path></svg>';
+    copy.addEventListener('click', function () {
+      var text = code ? code.innerText : pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        copy.setAttribute('data-copied', 'true');
+        setTimeout(function () { copy.removeAttribute('data-copied'); }, 1600);
+      });
+    });
+    bar.appendChild(copy);
+
+    figure.appendChild(bar);
+    figure.appendChild(pre);
+  });
+})();
+            </script></body></html>

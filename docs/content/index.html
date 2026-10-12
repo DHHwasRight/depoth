@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Writing content · Depoth</title><meta name="description" content="Frontmatter keys, the markdown body, and how a mistake in a header is reported with a file, a line and a column."><link rel="stylesheet" href="/assets/css/site.css"></head><body class="docs-page bg-ground text-ink font-sans antialiased pt-28 lg:pt-14"><a href="#main-content" class="docs-skip">Skip to content</a><header class="fixed inset-x-0 top-0 z-50 bg-ground"><div class="flex h-14 items-center gap-4 border-b border-line px-4 sm:px-6"><a href="/" class="flex shrink-0 items-center gap-2.5"><span class="text-[15px] font-semibold tracking-tight text-ink">Depoth</span><span class="rounded-full border border-line px-2 py-0.5 text-[12px] leading-5 tabular-nums text-ink-soft">v0.1.0</span></a><div class="ml-auto flex items-center gap-1 sm:gap-2"><button type="button" data-search class="flex items-center gap-2 rounded-lg border border-line px-2.5 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-ink-soft hover:text-ink"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span class="hidden sm:inline">Search docs</span><kbd class="hidden rounded border border-line px-1.5 font-sans text-[11px] leading-5 tabular-nums text-ink-soft sm:inline">⌘K</kbd></button><nav class="hidden items-center gap-1 md:flex" aria-label="Sections"><a href="/docs" class="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-ink" aria-current="page" target="_self">Documentation</a></nav><span class="hidden h-5 w-px bg-line md:block" aria-hidden="true"></span><a href="https://github.com/DHHwasRight/depoth" target="_blank" rel="noreferrer" class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink" aria-label="Source"><svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg></a><a href="https://github.com/DHHwasRight/rsx" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="rsx">rsx</a><a href="https://github.com/DHHwasRight/prerender" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="prerender">prerender</a></div></div><div class="flex h-14 items-center gap-3 border-b border-line px-4 sm:px-6 lg:hidden"><button type="button" data-nav-toggle aria-expanded="false" aria-controls="docs-sidebar" class="-ml-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-surface hover:text-ink"><span class="text-base leading-none" aria-hidden="true">☰</span><span class="sr-only">Open navigation</span></button><nav class="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-soft" aria-label="Breadcrumb"><span class="truncate text-ink">Writing</span></nav></div></header><div class="lg:grid lg:grid-cols-[288px_40px_minmax(0,1fr)_40px] lg:items-start"><aside id="docs-sidebar" data-sidebar class="docs-sidebar p-6 lg:sticky lg:top-14 lg:max-h-[calc(100dvh-56px)] lg:overflow-y-auto"><nav aria-label="Documentation"><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Getting started</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Overview</a></li><li class="docs-rail__item"><a href="/docs/install" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Install</a></li><li class="docs-rail__item"><a href="/docs/configuration" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Configuration</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Writing</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/content" class="docs-rail__link" style="--rail-depth:1" aria-current="page">Content</a></li><li class="docs-rail__item"><a href="/docs/navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Navigation</a></li><li class="docs-rail__item"><a href="/docs/layouts" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Layouts</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Shipping</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/partial-navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Partial navigation</a></li><li class="docs-rail__item"><a href="/docs/testing" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Testing</a></li><li class="docs-rail__item"><a href="/docs/deploying" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Deploying</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Background</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/design-notes" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Design notes</a></li></ul></div></nav></aside><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div><div class="min-w-0"><div class="mx-auto w-full max-w-[672px] px-4 sm:px-6 xl:max-w-[1024px] xl:grid xl:grid-cols-[minmax(0,1fr)_288px] xl:gap-10 xl:items-start xl:px-0"><main id="main-content" class="min-w-0 py-10 xl:pl-6"><div><p class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-accent">Writing</p><h1 class="mt-2 text-[30px] leading-9 font-medium tracking-tight text-ink">Writing content</h1><p class="mt-6 text-base leading-7 text-ink-soft">Frontmatter keys, the markdown body, and how a mistake in a header is reported with a file, a line and a column.</p></div><div class="prose mt-10"><p>A document is a YAML header between <code>---</code> fences, followed by markdown. It
+lives under <code>content_dir</code> and its path, minus the extension, is the slug the
+navigation names.</p>
+<pre class="hl"><code class="language-markdown"><span class="hl-text hl-html hl-markdown"><span class="hl-meta hl-block-level hl-markdown"><span class="hl-meta hl-separator hl-thematic-break hl-markdown"><span class="hl-punctuation hl-definition hl-thematic-break hl-markdown">---</span>
+</span></span><span class="hl-meta hl-paragraph hl-markdown">title: Installing depoth
+description: One sentence, used as the page subtitle and the meta description.
+sidebar_title: Install
+<span class="hl-markup hl-heading hl-2 hl-setext hl-markdown"><span class="hl-punctuation hl-definition hl-heading hl-setext hl-markdown">---</span></span></span>
+
+<span class="hl-meta hl-paragraph hl-markdown">Prose starts here. The title supplies the <span class="hl-markup hl-raw hl-inline hl-markdown"><span class="hl-punctuation hl-definition hl-raw hl-begin hl-markdown">`</span>h1<span class="hl-punctuation hl-definition hl-raw hl-end hl-markdown">`</span></span>, so the body starts at <span class="hl-markup hl-raw hl-inline hl-markdown"><span class="hl-punctuation hl-definition hl-raw hl-begin hl-markdown">`</span>##<span class="hl-punctuation hl-definition hl-raw hl-end hl-markdown">`</span></span>.
+</span></span></code></pre>
+<h2 id="frontmatter-keys">Frontmatter keys</h2>
+Frontmatter keys
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>title</code></td>
+<td>yes</td>
+<td>The page heading, the <code>&lt;title&gt;</code>, and the navigation label.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>no</td>
+<td>The page subtitle and the meta description.</td>
+</tr>
+<tr>
+<td><code>sidebar_title</code></td>
+<td>no</td>
+<td>A shorter label for the sidebar, when the title is too long for it.</td>
+</tr>
+</tbody>
+</table>
+<p>The navigation label is <code>sidebar_title</code> when it is present and <code>title</code>
+otherwise. Nothing in the navigation declaration repeats either of them.</p>
+<p>Three keys is not an accident. Across 489 production pages, <code>title</code> appeared
+487 times, <code>description</code> 260 and a sidebar title 6. A small number of keys
+carries a real site.</p>
+<h2 id="the-body">The body</h2>
+The body
+<p>The body is markdown, rendered at build time. Headings get GitHub-compatible
+anchor ids and are collected into the on-this-page rail with their level, their
+id and their text.</p>
+<p>Code fences are highlighted at build time, so no highlighter is sent to the
+browser. A site with no code on it ships no CSS for code.</p>
+<h2 id="a-document-with-no-header">A document with no header</h2>
+A document with no header
+<p>Not an error. It is a document with no header, and the body starts at line 1.</p>
+<p>An opening <code>---</code> with no closing <code>---</code> is also left as a body in full. Guessing
+that the author meant a header would hide the real mistake, which is the
+missing fence.</p>
+<p>A <code>---</code> thematic break inside the body is not a closing fence, because the
+closing fence is only the first line that is exactly <code>---</code>. A byte-order mark
+at the start of the file does not hide the opening fence either.</p>
+<h2 id="how-errors-are-reported">How errors are reported</h2>
+How errors are reported
+<p>A frontmatter mistake is reported with the file, the line, the column and the
+field:</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">guide/install.md:3:9  weight: invalid type: string &quot;3&quot;, expected u64
+</span></code></pre>
+<p>The line is counted from the start of the file, not from the start of the
+header. The field is the dotted path serde walked to reach the failure, which
+still names it when the failure is nested inside a sequence or a map. An
+unknown key names the alternatives, so <code>titel</code> suggests <code>title</code>.</p>
+<h2 id="why-depoth-splits-the-fences-itself">Why depoth splits the fences itself</h2>
+Why depoth splits the fences itself
+<p>Splitting <code>---</code> fences is about ten lines. Every frontmatter crate does it, and
+every one of them hands back the YAML and throws away where the YAML started.</p>
+<p>That byte offset is the whole difference between</p>
+<pre class="hl"><code class="language-text"><span class="hl-text hl-plain">line 2 column 9: invalid type: string &quot;3&quot;, expected u64
+</span></code></pre>
+<p>and the message above. The first one is relative to a block the author cannot
+see — they are looking at a file, and the header has an opening fence the
+parser already removed. Keeping the offset costs ten lines and one dependency
+saved, and it turns every frontmatter error from a hunt into a jump.</p>
+</div><nav class="mt-16 grid gap-3 border-t border-line pt-8 sm:grid-cols-2" aria-label="Pagination"><a href="/docs/configuration" rel="prev" class="flex flex-col gap-1 rounded-xl border border-line px-4 py-3 text-[13px] leading-5 text-ink-soft transition-colors hover:border-accent hover:bg-surface"><span>Previous</span><span class="font-semibold text-ink">Configuration</span></a><a href="/docs/navigation" rel="next" class="flex flex-col gap-1 rounded-xl border border-line px-4 py-3 text-[13px] leading-5 text-ink-soft transition-colors hover:border-accent hover:bg-surface sm:items-end sm:text-right"><span>Next</span><span class="font-semibold text-ink">Navigation</span></a></nav></main><aside class="hidden xl:block xl:sticky xl:top-14 xl:max-h-[calc(100dvh-56px)] xl:overflow-y-auto xl:py-10 xl:pr-6"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">On this page</h2><nav class="mt-2" aria-label="On this page"><ul class="docs-rail"><li class="docs-rail__item"><a href="#frontmatter-keys" class="docs-rail__link">Frontmatter keys</a></li><li class="docs-rail__item"><a href="#the-body" class="docs-rail__link">The body</a></li><li class="docs-rail__item"><a href="#a-document-with-no-header" class="docs-rail__link">A document with no header</a></li><li class="docs-rail__item"><a href="#how-errors-are-reported" class="docs-rail__link">How errors are reported</a></li><li class="docs-rail__item"><a href="#why-depoth-splits-the-fences-itself" class="docs-rail__link">Why depoth splits the fences itself</a></li></ul></nav></aside></div><footer class="mx-auto w-full max-w-[672px] border-t border-line px-4 py-8 text-[13px] leading-5 text-ink-soft sm:px-6 xl:max-w-[1024px] xl:px-0"><div class="flex flex-wrap items-center gap-x-4 gap-y-2 xl:pl-6"><span>Depoth</span><span class="text-line" aria-hidden="true">·</span><span>v0.1.0</span><a href="https://github.com/DHHwasRight/depoth" class="transition-colors hover:text-ink">Source</a><a href="https://github.com/DHHwasRight/rsx" class="transition-colors hover:text-ink">rsx</a><a href="https://github.com/DHHwasRight/prerender" class="transition-colors hover:text-ink">prerender</a></div></footer></div><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div></div><button type="button" class="docs-scrim lg:hidden" data-sidebar-close tabindex="-1" aria-label="Close"></button><script>
+(function () {
+  var root = document.documentElement;
+
+  // The navigation sheet. State lives on <html> so CSS alone can position
+  // the sidebar, the scrim and the page behind them.
+  var toggle = document.querySelector('[data-nav-toggle]');
+  function setNav(open) {
+    root.setAttribute('data-nav', open ? 'open' : 'closed');
+    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      setNav(root.getAttribute('data-nav') !== 'open');
+    });
+  }
+  document.querySelectorAll('[data-sidebar-close]').forEach(function (el) {
+    el.addEventListener('click', function () { setNav(false); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setNav(false);
+  });
+  var sidebar = document.getElementById('docs-sidebar');
+  if (sidebar) {
+    sidebar.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNav(false);
+    });
+  }
+
+  // Code blocks. Markdown gives us a bare <pre><code>; the chrome around it
+  // is progressive enhancement, so the panel still reads without script.
+  document.querySelectorAll('.prose pre').forEach(function (pre) {
+    if (pre.closest('.code-block')) return;
+
+    var figure = document.createElement('figure');
+    figure.className = 'code-block';
+    pre.parentNode.insertBefore(figure, pre);
+
+    var bar = document.createElement('figcaption');
+    bar.className = 'code-block__bar';
+
+    var code = pre.querySelector('code');
+    var name = pre.getAttribute('data-filename') || '';
+    if (!name && code) {
+      var match = /(?:language|lang)-([\w+#-]+)/.exec(code.className || '');
+      if (match) name = match[1];
+    }
+    bar.appendChild(document.createTextNode(name));
+
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'code-block__copy';
+    copy.setAttribute('aria-label', 'Copy code');
+    copy.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h8"></path></svg>';
+    copy.addEventListener('click', function () {
+      var text = code ? code.innerText : pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        copy.setAttribute('data-copied', 'true');
+        setTimeout(function () { copy.removeAttribute('data-copied'); }, 1600);
+      });
+    });
+    bar.appendChild(copy);
+
+    figure.appendChild(bar);
+    figure.appendChild(pre);
+  });
+})();
+            </script></body></html>

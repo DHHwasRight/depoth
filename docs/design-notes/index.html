@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Design notes · Depoth</title><meta name="description" content="The decisions worth knowing — the two clocks, the type as the schema, propose rather than choose, and no backend."><link rel="stylesheet" href="/assets/css/site.css"></head><body class="docs-page bg-ground text-ink font-sans antialiased pt-28 lg:pt-14"><a href="#main-content" class="docs-skip">Skip to content</a><header class="fixed inset-x-0 top-0 z-50 bg-ground"><div class="flex h-14 items-center gap-4 border-b border-line px-4 sm:px-6"><a href="/" class="flex shrink-0 items-center gap-2.5"><span class="text-[15px] font-semibold tracking-tight text-ink">Depoth</span><span class="rounded-full border border-line px-2 py-0.5 text-[12px] leading-5 tabular-nums text-ink-soft">v0.1.0</span></a><div class="ml-auto flex items-center gap-1 sm:gap-2"><button type="button" data-search class="flex items-center gap-2 rounded-lg border border-line px-2.5 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-ink-soft hover:text-ink"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span class="hidden sm:inline">Search docs</span><kbd class="hidden rounded border border-line px-1.5 font-sans text-[11px] leading-5 tabular-nums text-ink-soft sm:inline">⌘K</kbd></button><nav class="hidden items-center gap-1 md:flex" aria-label="Sections"><a href="/docs" class="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-ink" aria-current="page" target="_self">Documentation</a></nav><span class="hidden h-5 w-px bg-line md:block" aria-hidden="true"></span><a href="https://github.com/DHHwasRight/depoth" target="_blank" rel="noreferrer" class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink" aria-label="Source"><svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path></svg></a><a href="https://github.com/DHHwasRight/rsx" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="rsx">rsx</a><a href="https://github.com/DHHwasRight/prerender" target="_blank" rel="noreferrer" class="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex" aria-label="prerender">prerender</a></div></div><div class="flex h-14 items-center gap-3 border-b border-line px-4 sm:px-6 lg:hidden"><button type="button" data-nav-toggle aria-expanded="false" aria-controls="docs-sidebar" class="-ml-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-surface hover:text-ink"><span class="text-base leading-none" aria-hidden="true">☰</span><span class="sr-only">Open navigation</span></button><nav class="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-soft" aria-label="Breadcrumb"><span class="truncate text-ink">Background</span></nav></div></header><div class="lg:grid lg:grid-cols-[288px_40px_minmax(0,1fr)_40px] lg:items-start"><aside id="docs-sidebar" data-sidebar class="docs-sidebar p-6 lg:sticky lg:top-14 lg:max-h-[calc(100dvh-56px)] lg:overflow-y-auto"><nav aria-label="Documentation"><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Getting started</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Overview</a></li><li class="docs-rail__item"><a href="/docs/install" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Install</a></li><li class="docs-rail__item"><a href="/docs/configuration" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Configuration</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Writing</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/content" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Content</a></li><li class="docs-rail__item"><a href="/docs/navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Navigation</a></li><li class="docs-rail__item"><a href="/docs/layouts" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Layouts</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Shipping</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/partial-navigation" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Partial navigation</a></li><li class="docs-rail__item"><a href="/docs/testing" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Testing</a></li><li class="docs-rail__item"><a href="/docs/deploying" class="docs-rail__link" style="--rail-depth:1" aria-current="false">Deploying</a></li></ul></div><div class="docs-nav-group mt-8 first:mt-0" style="--rail-depth:0"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">Background</h2><ul class="docs-rail mt-2"><li class="docs-rail__item"><a href="/docs/design-notes" class="docs-rail__link" style="--rail-depth:1" aria-current="page">Design notes</a></li></ul></div></nav></aside><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div><div class="min-w-0"><div class="mx-auto w-full max-w-[672px] px-4 sm:px-6 xl:max-w-[1024px] xl:grid xl:grid-cols-[minmax(0,1fr)_288px] xl:gap-10 xl:items-start xl:px-0"><main id="main-content" class="min-w-0 py-10 xl:pl-6"><div><p class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-accent">Background</p><h1 class="mt-2 text-[30px] leading-9 font-medium tracking-tight text-ink">Design notes</h1><p class="mt-6 text-base leading-7 text-ink-soft">The decisions worth knowing — the two clocks, the type as the schema, propose rather than choose, and no backend.</p></div><div class="prose mt-10"><p>Each decision below was argued and shipped in the Crystal predecessor, which
+reached 0.2.0, 315 specs and one 489-page production site. They are carried
+forward rather than invented here, which is why the reasoning is specific.</p>
+<h2 id="the-two-clocks">The two clocks</h2>
+The two clocks
+<p>A template edit pays for a compile. A content edit re-runs the already-built
+binary. Keeping those on separate clocks is the point of compiling templates at
+all: a content author must never wait for a compiler.</p>
+<p>The open risk in moving to Rust was that the compile clock would leave
+interactive range. It did not. Measured on a thirteen-template probe — a
+layout, control flow, a component call — with a warm <code>target/</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cold build, every dependency</td>
+<td>21.3 s</td>
+</tr>
+<tr>
+<td><strong>Template edit, rebuild</strong></td>
+<td><strong>0.50 s</strong></td>
+</tr>
+<tr>
+<td>No-op rebuild</td>
+<td>0.36 s</td>
+</tr>
+<tr>
+<td><strong>Re-run the built binary</strong></td>
+<td><strong>0.16 s</strong></td>
+</tr>
+<tr>
+<td>Release build</td>
+<td>49.0 s</td>
+</tr>
+</tbody>
+</table>
+<p>A template edit is four times faster than the Crystal predecessor's 2.0 s,
+because the heavy dependencies — comrak, oxc, syntect — compile once and only
+the leaf crate recompiles. No fallback is needed and the design stands as
+written.</p>
+<p>Two caveats stay on the record. Codegen scales with template count, so 0.50 s
+is a thirteen-template number and must be re-measured at the size of a real
+site. And the release build is 49 s, which is a deploy cost — but it is the
+reason <code>--release</code> is never the default for development.</p>
+<h2 id="the-type-is-the-schema">The type is the schema</h2>
+The type is the schema
+<p>A page's frontmatter is deserialised into a Rust struct. The struct is the
+schema; there is no schema file.</p>
+<p>Generating structs from a schema file is circular: reading the schema means
+compiling it, and its output is what needs compiling. Deriving instead gives
+coercion, defaults and error messages for free, and an unknown key is rejected
+by the same derive that reads the known ones. A typo that is quietly ignored
+costs more time than any error message does.</p>
+<h2 id="compile-templates-do-not-interpret-them">Compile templates, do not interpret them</h2>
+Compile templates, do not interpret them
+<p>An interpreter is a second, weaker implementation of a compiler that already
+exists. See <a href="/docs/layouts">Layouts</a> for what that buys and what it costs.</p>
+<h2 id="propose-dont-choose">Propose, don't choose</h2>
+Propose, don't choose
+<p>Choosing a CSS framework or a bundler is the site's decision, not the
+framework's. depoth offers a pre-build command hook and stays out of what you
+run in it. Grep the Crystal source for &quot;tailwind&quot; and you get nothing; this
+documentation site uses Tailwind, and the framework does not know it exists.</p>
+<p>The same rule applies to markdown extension, ranked by blast radius: a render
+hook first, because it takes markup out of every document at once, and a
+component call inside a document last.</p>
+<h2 id="no-backend-ever">No backend, ever</h2>
+No backend, ever
+<p>The output is files. No request handling, no compute at request time. That
+constraint is what makes partial navigation prerendered rather than served —
+every form of every page is written at build time, and the server only chooses
+between them.</p>
+<p>It is also why there is no interactive API playground: that needs a server to
+proxy requests, and we do not have one. It degrades to a copyable endpoint.</p>
+<h2 id="every-page-works-with-javascript-off">Every page works with JavaScript off</h2>
+Every page works with JavaScript off
+<p>A fragment is never the only representation of a page. This is a test, not a
+guideline — and it is the same property that makes <code>--no-partials</code> a one-line
+change rather than a second rendering path.</p>
+<h2 id="build-order">Build order</h2>
+Build order
+<p>Navigation lists slugs only; every title comes from the page's own frontmatter.
+That means the sidebar cannot be built until all content is loaded, which fixes
+the order: discover content, read frontmatter, resolve navigation, render.</p>
+</div><nav class="mt-16 grid gap-3 border-t border-line pt-8 sm:grid-cols-2" aria-label="Pagination"><a href="/docs/deploying" rel="prev" class="flex flex-col gap-1 rounded-xl border border-line px-4 py-3 text-[13px] leading-5 text-ink-soft transition-colors hover:border-accent hover:bg-surface"><span>Previous</span><span class="font-semibold text-ink">Deploying a site</span></a></nav></main><aside class="hidden xl:block xl:sticky xl:top-14 xl:max-h-[calc(100dvh-56px)] xl:overflow-y-auto xl:py-10 xl:pr-6"><h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">On this page</h2><nav class="mt-2" aria-label="On this page"><ul class="docs-rail"><li class="docs-rail__item"><a href="#the-two-clocks" class="docs-rail__link">The two clocks</a></li><li class="docs-rail__item"><a href="#the-type-is-the-schema" class="docs-rail__link">The type is the schema</a></li><li class="docs-rail__item"><a href="#compile-templates-do-not-interpret-them" class="docs-rail__link">Compile templates, do not interpret them</a></li><li class="docs-rail__item"><a href="#propose-dont-choose" class="docs-rail__link">Propose, don&#39;t choose</a></li><li class="docs-rail__item"><a href="#no-backend-ever" class="docs-rail__link">No backend, ever</a></li><li class="docs-rail__item"><a href="#every-page-works-with-javascript-off" class="docs-rail__link">Every page works with JavaScript off</a></li><li class="docs-rail__item"><a href="#build-order" class="docs-rail__link">Build order</a></li></ul></nav></aside></div><footer class="mx-auto w-full max-w-[672px] border-t border-line px-4 py-8 text-[13px] leading-5 text-ink-soft sm:px-6 xl:max-w-[1024px] xl:px-0"><div class="flex flex-wrap items-center gap-x-4 gap-y-2 xl:pl-6"><span>Depoth</span><span class="text-line" aria-hidden="true">·</span><span>v0.1.0</span><a href="https://github.com/DHHwasRight/depoth" class="transition-colors hover:text-ink">Source</a><a href="https://github.com/DHHwasRight/rsx" class="transition-colors hover:text-ink">rsx</a><a href="https://github.com/DHHwasRight/prerender" class="transition-colors hover:text-ink">prerender</a></div></footer></div><div class="docs-gutter hidden lg:block lg:min-h-[calc(100dvh-56px)] lg:sticky lg:top-14 lg:h-[calc(100dvh-56px)]" aria-hidden="true"></div></div><button type="button" class="docs-scrim lg:hidden" data-sidebar-close tabindex="-1" aria-label="Close"></button><script>
+(function () {
+  var root = document.documentElement;
+
+  // The navigation sheet. State lives on <html> so CSS alone can position
+  // the sidebar, the scrim and the page behind them.
+  var toggle = document.querySelector('[data-nav-toggle]');
+  function setNav(open) {
+    root.setAttribute('data-nav', open ? 'open' : 'closed');
+    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      setNav(root.getAttribute('data-nav') !== 'open');
+    });
+  }
+  document.querySelectorAll('[data-sidebar-close]').forEach(function (el) {
+    el.addEventListener('click', function () { setNav(false); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setNav(false);
+  });
+  var sidebar = document.getElementById('docs-sidebar');
+  if (sidebar) {
+    sidebar.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNav(false);
+    });
+  }
+
+  // Code blocks. Markdown gives us a bare <pre><code>; the chrome around it
+  // is progressive enhancement, so the panel still reads without script.
+  document.querySelectorAll('.prose pre').forEach(function (pre) {
+    if (pre.closest('.code-block')) return;
+
+    var figure = document.createElement('figure');
+    figure.className = 'code-block';
+    pre.parentNode.insertBefore(figure, pre);
+
+    var bar = document.createElement('figcaption');
+    bar.className = 'code-block__bar';
+
+    var code = pre.querySelector('code');
+    var name = pre.getAttribute('data-filename') || '';
+    if (!name && code) {
+      var match = /(?:language|lang)-([\w+#-]+)/.exec(code.className || '');
+      if (match) name = match[1];
+    }
+    bar.appendChild(document.createTextNode(name));
+
+    var copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'code-block__copy';
+    copy.setAttribute('aria-label', 'Copy code');
+    copy.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h8"></path></svg>';
+    copy.addEventListener('click', function () {
+      var text = code ? code.innerText : pre.innerText;
+      navigator.clipboard.writeText(text).then(function () {
+        copy.setAttribute('data-copied', 'true');
+        setTimeout(function () { copy.removeAttribute('data-copied'); }, 1600);
+      });
+    });
+    bar.appendChild(copy);
+
+    figure.appendChild(bar);
+    figure.appendChild(pre);
+  });
+})();
+            </script></body></html>

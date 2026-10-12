@@ -1,0 +1,16 @@
+# Depoth
+
+> A static content framework in Rust. Templates compile; content does not.
+
+## Documentation
+
+- [What depoth is](https://dhhwasright.github.io/depoth/docs): A static content framework in Rust, built on compiled templates and prerendered partial navigation.
+- [Installing depoth](https://dhhwasright.github.io/depoth/docs/install): A site is a Rust crate, so there is nothing to install globally — you add three dependencies and build.
+- [Configuration](https://dhhwasright.github.io/depoth/docs/configuration): depoth.yaml, key by key — identity, directories, navigation, redirects, commands and bundles.
+- [Writing content](https://dhhwasright.github.io/depoth/docs/content): Frontmatter keys, the markdown body, and how a mistake in a header is reported with a file, a line and a column.
+- [Navigation](https://dhhwasright.github.io/depoth/docs/navigation): One tree, declared outside the content, yielding the sidebar, the tab bar, breadcrumbs and prev/next.
+- [Layouts and templates](https://dhhwasright.github.io/depoth/docs/layouts): Templates are rsx. They compile into the binary, which buys type checking and costs a rebuild on every edit.
+- [Partial navigation](https://dhhwasright.github.io/depoth/docs/partial-navigation): Every route is prerendered as a document and as smaller trees, so a navigation replaces only what changed.
+- [Testing a built site](https://dhhwasright.github.io/depoth/docs/testing): Six rules asserted over the output HTML in process, and the three claims that still need a browser.
+- [Deploying a site](https://dhhwasright.github.io/depoth/docs/deploying): Building for a static host, publishing to GitHub Pages, and serving the partial trees through nginx.
+- [Design notes](https://dhhwasright.github.io/depoth/docs/design-notes): The decisions worth knowing — the two clocks, the type as the schema, propose rather than choose, and no backend.
