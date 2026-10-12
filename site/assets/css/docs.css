@@ -1,1 +1,506 @@
-/* docs.css — placeholder, owned by another agent. */
+/* The documentation shell, for the parts a Tailwind utility cannot say.
+ *
+ * Four things live here and nothing else: the gutter hatch, the rail geometry
+ * (a shared border and a per-item tick, which needs negative margins), the
+ * prose rhythm (rules that must reach markdown we never wrote), and the code
+ * block chrome. Layout and spacing stay in the markup as utilities.
+ *
+ * No hex value appears below. Every colour is a token from `theme.css`, so a
+ * palette change is a change there and nowhere else. The one exception is the
+ * code panel's internal washes: `rgb(255 255 255 / .08)` is an alpha on a
+ * deliberately dark surface, not a colour of its own.
+ */
+
+/* ----------------------------------------------------------- keyboard entry */
+
+/* Parked above the viewport rather than clipped to a pixel: a transform keeps
+ * the link a real box, so the first Tab lands on something with a height. The
+ * utility pair `sr-only focus:not-sr-only` cannot say this, because which of
+ * the two `position` declarations wins is decided by source order. */
+.docs-skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 60;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-ground);
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-ink);
+  transform: translateY(calc(-100% - 16px));
+  transition: transform 0.15s ease;
+}
+
+.docs-skip:focus {
+  transform: none;
+}
+
+/* One ring, for everything this layout makes interactive. Scoped to the page
+ * class so the rule cannot reach a template another file owns. */
+.docs-page :where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------- the gutters */
+
+/* The two 40px tracks between sidebar, content and page edge. The hatch is
+ * attached to the viewport, so it holds still while the page scrolls past. */
+.docs-gutter {
+  --docs-hatch: color-mix(in oklab, var(--color-accent) 8%, transparent);
+
+  border-inline: 1px solid var(--color-line);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--docs-hatch) 0,
+    var(--docs-hatch) 1px,
+    transparent 0,
+    transparent 50%
+  );
+  background-size: 10px 10px;
+  background-attachment: fixed;
+}
+
+/* --------------------------------------------------------- the left column */
+
+.docs-sidebar {
+  background: var(--color-ground);
+}
+
+/* Below `lg` the sidebar is a sheet behind the ☰, and the state that opens it
+ * lives on the root element so CSS alone can place the sheet and its scrim. */
+.docs-scrim {
+  display: none;
+  position: fixed;
+  inset: 112px 0 0 0;
+  z-index: 40;
+  background: var(--color-ink);
+  opacity: 0.3;
+  border: 0;
+  cursor: default;
+}
+
+@media (max-width: 1023.98px) {
+  .docs-sidebar {
+    position: fixed;
+    inset: 112px auto 0 0;
+    z-index: 45;
+    width: min(320px, 86vw);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-right: 1px solid var(--color-line);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0.2s;
+  }
+
+  :root[data-nav="open"] .docs-sidebar {
+    transform: none;
+    visibility: visible;
+  }
+
+  :root[data-nav="open"] .docs-scrim {
+    display: block;
+  }
+
+  :root[data-nav="open"] body {
+    overflow: hidden;
+  }
+}
+
+/* ------------------------------------------------- the rail, both of them */
+
+/* One border for the whole list; each item pulls left by a pixel and paints
+ * its own tick over it. A transparent tick shows the list border through, so
+ * hover and the current page only have to change a colour. */
+.docs-rail {
+  border-left: 1px solid var(--color-line);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docs-rail__item {
+  margin-left: -1px;
+}
+
+.docs-rail__link {
+  display: block;
+  border-left: 1px solid transparent;
+  padding-left: calc(16px + (var(--rail-depth, 0) * 12px));
+  padding-block: 4px;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--color-ink-soft);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.docs-rail__link:hover {
+  border-left-color: color-mix(in oklab, var(--color-ink) 30%, var(--color-line));
+  color: var(--color-ink);
+}
+
+/* The current page is a tick in the accent and full-contrast text. No pill,
+ * no background chip: the rail already says where the list is. */
+.docs-rail__link[aria-current="page"] {
+  border-left-color: var(--color-accent);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* Children of a heading in the on-this-page rail: indented, and their own
+ * rail is invisible so only the parent's line runs down the column. */
+.docs-rail--sub {
+  border-left-color: transparent;
+}
+
+.docs-rail--sub .docs-rail__link {
+  padding-left: 30px;
+  font-size: 13px;
+}
+
+/* A nested sidebar group steps in by the same amount a nested link does. */
+.docs-nav-group {
+  margin-left: calc(var(--rail-depth, 0) * 12px);
+}
+
+/* ------------------------------------------------------------- the article */
+
+.prose {
+  font-size: 14px;
+  line-height: 28px;
+  color: var(--color-ink-soft);
+  overflow-wrap: break-word;
+}
+
+/* One rhythm for everything, then the headings claim their own space above. */
+.prose > * + * {
+  margin-top: 24px;
+}
+
+.prose :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-ink);
+  scroll-margin-top: 72px;
+  text-wrap: balance;
+}
+
+.prose h2 {
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 600;
+  margin-top: 80px;
+}
+
+.prose h3 {
+  font-size: 16px;
+  line-height: 28px;
+  font-weight: 600;
+  margin-top: 64px;
+}
+
+.prose h4 {
+  font-size: 14px;
+  line-height: 28px;
+  font-weight: 600;
+  margin-top: 48px;
+}
+
+.prose :is(h2, h3, h4):first-child {
+  margin-top: 0;
+}
+
+.prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* Underlined rather than coloured: a link in running text is marked by its
+ * weight and its rule, so the accent stays the colour of interaction. */
+.prose a {
+  color: var(--color-ink);
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-sky-base);
+  text-underline-offset: 3px;
+  transition: text-decoration-thickness 0.1s ease;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.prose :is(ul, ol) {
+  padding-left: 24px;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li {
+  padding-left: 12px;
+}
+
+.prose li::marker {
+  color: var(--color-line);
+}
+
+.prose li + li,
+.prose li > :is(ul, ol) {
+  margin-top: 16px;
+}
+
+.prose hr {
+  margin-block: 64px;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.prose blockquote {
+  border-inline-start: 2px solid var(--color-line);
+  padding-left: 16px;
+  font-style: italic;
+}
+
+.prose img,
+.prose video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--color-ink);
+}
+
+/* A wide sample scrolls inside itself, whatever chrome is around it. This
+ * stands whether the markdown renderer wrapped the block or left it bare. */
+.prose pre {
+  overflow-x: auto;
+}
+
+/* A wide table scrolls inside itself. The page never scrolls sideways. */
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.prose :is(th, td) {
+  border-bottom: 1px solid var(--color-line);
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  color: var(--color-ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------- code blocks */
+
+/* The panel stays dark in both themes. It is the only large non-white block
+ * on the page, and that inversion is what makes code scannable at a glance,
+ * so the tokens below are fixed rather than theme-dependent. */
+.code-block {
+  --code-ground: var(--color-paper-950);
+  --code-ink: var(--color-paper-100);
+  --code-ink-soft: var(--color-paper-400);
+
+  position: relative;
+  border-radius: 12px;
+  background: var(--code-ground);
+  padding: 4px;
+  color: var(--code-ink);
+}
+
+.prose > .code-block {
+  margin: 16px 0 40px;
+}
+
+/* Filename or language, and the copy button that sits in the same strip. */
+.code-block__bar {
+  position: relative;
+  min-height: 26px;
+  padding: 2px 44px 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--code-ink-soft);
+}
+
+.code-block__copy {
+  position: absolute;
+  right: 0;
+  top: -4px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--code-ink);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.code-block__copy svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Hidden until the block is under the pointer, then half-lit, then brighter
+ * on the button itself. Keyboard focus reveals it the same way. */
+.code-block:hover .code-block__copy,
+.code-block__copy:focus-visible {
+  opacity: 0.5;
+}
+
+.code-block .code-block__copy:hover,
+.code-block .code-block__copy[data-copied] {
+  opacity: 0.75;
+}
+
+.code-block pre {
+  margin: 0;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.code-block :is(pre, code) {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  color: inherit;
+}
+
+.code-block code {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* Without script the markdown's bare `pre` is still the panel, one box
+ * instead of two. */
+.prose > pre {
+  margin: 16px 0 40px;
+  border-radius: 12px;
+  background: var(--color-paper-950);
+  color: var(--color-paper-100);
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+/* ------------------------------------------------------------- callouts */
+
+/* One hue per meaning: the fill is the hue's `-low`, the stroke its `-base`
+ * and every word inside it its `-high`. Those three tiers are contrast-tested
+ * against each other, which is why a callout never picks its own colours. */
+.callout {
+  --callout-low: var(--color-sky-low);
+  --callout-base: var(--color-sky-base);
+  --callout-high: var(--color-sky-high);
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 24px;
+  border-inline-start: 4px solid var(--callout-base);
+  background: var(--callout-low);
+  color: var(--callout-high);
+}
+
+.callout :is(.callout__title, .callout-title) {
+  font-weight: 600;
+  color: var(--callout-high);
+}
+
+.callout :is(.callout__body, .callout-body) > * + * {
+  margin-top: 12px;
+}
+
+.callout a {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+.callout :not(pre) > code {
+  background: color-mix(in oklab, var(--callout-high) 10%, transparent);
+  border-color: color-mix(in oklab, var(--callout-high) 25%, transparent);
+  color: inherit;
+}
+
+:is(.callout--note, .callout.note) {
+  --callout-low: var(--color-sky-low);
+  --callout-base: var(--color-sky-base);
+  --callout-high: var(--color-sky-high);
+}
+
+:is(.callout--tip, .callout.tip) {
+  --callout-low: var(--color-lilac-low);
+  --callout-base: var(--color-lilac-base);
+  --callout-high: var(--color-lilac-high);
+}
+
+:is(.callout--success, .callout.success) {
+  --callout-low: var(--color-mint-low);
+  --callout-base: var(--color-mint-base);
+  --callout-high: var(--color-mint-high);
+}
+
+:is(.callout--caution, .callout.caution) {
+  --callout-low: var(--color-peach-low);
+  --callout-base: var(--color-peach-base);
+  --callout-high: var(--color-peach-high);
+}
+
+/* Defined for completeness; nothing in the docs uses it yet. */
+:is(.callout--danger, .callout.danger) {
+  --callout-low: var(--color-rose-low);
+  --callout-base: var(--color-rose-base);
+  --callout-high: var(--color-rose-high);
+}
+
+/* ---------------------------------------------------------------- motion */
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .docs-sidebar,
+  .docs-rail__link,
+  .code-block__copy,
+  .prose a {
+    transition: none;
+  }
+}

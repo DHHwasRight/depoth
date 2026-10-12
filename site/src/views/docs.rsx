@@ -1,12 +1,12 @@
-//! The documentation shell: header, sidebar, article, on-this-page rail.
-//!
-//! Layout and spacing are Tailwind utilities in the markup. Only the things a
-//! utility cannot say — the gutter hatch, the rail geometry, the prose rhythm,
-//! the code-block chrome, the callouts — live in `assets/css/docs.css`.
-//!
-//! Colour never appears here as a literal. Every utility that paints resolves
-//! to a token from `theme.css` (`bg-ground`, `text-ink-soft`, `border-line`,
-//! `text-accent`, `bg-sky-low`, …), so a palette change stays in one file.
+// The documentation shell: header, sidebar, article, on-this-page rail.
+//
+// Layout and spacing are Tailwind utilities in the markup. Only the things a
+// utility cannot say — the gutter hatch, the rail geometry, the prose rhythm,
+// the code-block chrome, the callouts — live in `assets/css/docs.css`.
+//
+// Colour never appears here as a literal. Every utility that paints resolves
+// to a token from `theme.css` (`bg-ground`, `text-ink-soft`, `border-line`,
+// `text-accent`, `bg-sky-low`, …), so a palette change stays in one file.
 
 use crate::data::{Chrome, Doc, Heading, Link, SidebarItem, Tab};
 
@@ -14,11 +14,11 @@ use crate::data::{Chrome, Doc, Heading, Link, SidebarItem, Tab};
 /// owns it; move it to the data layer when the pipeline starts stamping one.
 const VERSION: &str = "v0.1.0";
 
-/// Stylesheets. The pipeline decides the final names; these are the two the
-/// page needs: the compiled Tailwind build (which has `theme.css` as its
-/// theme) and this layout's own rules.
-const SITE_CSS: &str = "/css/site.css";
-const DOCS_CSS: &str = "/css/docs.css";
+/// The one stylesheet. `assets/css/_tailwind.css` imports `theme.css`,
+/// `docs.css` and `landing.css`, and the Tailwind build writes the lot to
+/// `assets/css/site.css`, so the page links that file and nothing else.
+const HOME: &str = concat!(env!("DEPOTH_BASE"), "/");
+const SITE_CSS: &str = concat!(env!("DEPOTH_BASE"), "/assets/css/site.css");
 
 // ---------------------------------------------------------------- the page
 
@@ -34,16 +34,12 @@ pub fn DocsPage(chrome: &Chrome, doc: &Doc) -> Element {
                 <meta name="description" content={description} />
             }
             <link rel="stylesheet" href={SITE_CSS} />
-            <link rel="stylesheet" href={DOCS_CSS} />
         </head>
 
         // The header is fixed, so the document pays for its own height: two
         // bars below `lg`, one at and above it.
-        <body class="bg-ground text-ink font-sans antialiased pt-28 lg:pt-14">
-            <a href="#main-content"
-               class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-60 focus:rounded-lg focus:border focus:border-line focus:bg-ground focus:px-3 focus:py-2 focus:text-sm">
-                Skip to content
-            </a>
+        <body class="docs-page bg-ground text-ink font-sans antialiased pt-28 lg:pt-14">
+            <a href="#main-content" class="docs-skip">Skip to content</a>
 
             <Header chrome={chrome} />
 
@@ -73,7 +69,7 @@ pub fn DocsPage(chrome: &Chrome, doc: &Doc) -> Element {
             </div>
 
             // Closes the sheet when the sidebar is open below `lg`.
-            <button type="button" class="docs-scrim lg:hidden" data-nav-close tabindex="-1" aria-hidden="true"></button>
+            <button type="button" class="docs-scrim lg:hidden" data-sidebar-close tabindex="-1" aria-label="Close"></button>
 
             <script>
 (function () {
@@ -91,7 +87,7 @@ pub fn DocsPage(chrome: &Chrome, doc: &Doc) -> Element {
       setNav(root.getAttribute('data-nav') !== 'open');
     });
   }
-  document.querySelectorAll('[data-nav-close]').forEach(function (el) {
+  document.querySelectorAll('[data-sidebar-close]').forEach(function (el) {
     el.addEventListener('click', function () { setNav(false); });
   });
   document.addEventListener('keydown', function (e) {
@@ -154,7 +150,7 @@ pub fn DocsPage(chrome: &Chrome, doc: &Doc) -> Element {
 pub fn Header(chrome: &Chrome) -> Element {
     <header class="fixed inset-x-0 top-0 z-50 bg-ground">
         <div class="flex h-14 items-center gap-4 border-b border-line px-4 sm:px-6">
-            <a href="/" class="flex shrink-0 items-center gap-2.5">
+            <a href={HOME} class="flex shrink-0 items-center gap-2.5">
                 <span class="text-[15px] font-semibold tracking-tight text-ink">{chrome.site_name}</span>
                 <span class="rounded-full border border-line px-2 py-0.5 text-[12px] leading-5 tabular-nums text-ink-soft">
                     {VERSION}
@@ -187,14 +183,14 @@ pub fn Header(chrome: &Chrome) -> Element {
 
                 for anchor in &chrome.anchors {
                     <a href={anchor.url} target="_blank" rel="noreferrer"
-                       class="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink"
+                       class={anchor_class(anchor)}
                        aria-label={anchor.label}>
                         if is_github(anchor) {
                             <svg class="size-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
                             </svg>
                         } else {
-                            <span class="hidden sm:inline">{anchor.label}</span>
+                            {anchor.label}
                         }
                     </a>
                 }
@@ -211,7 +207,7 @@ pub fn Header(chrome: &Chrome) -> Element {
             <nav class="flex min-w-0 items-center gap-1.5 text-[13px] text-ink-soft" aria-label="Breadcrumb">
                 for (i, step) in chrome.trail.iter().enumerate() {
                     if i > 0 {
-                        <span class="shrink-0 text-line" aria-hidden="true">›</span>
+                        <span class="hidden shrink-0 text-line sm:inline" aria-hidden="true">›</span>
                     }
                     <span class={crumb_class(i, chrome.trail.len())}>{step}</span>
                 }
@@ -225,11 +221,11 @@ pub fn Header(chrome: &Chrome) -> Element {
 /// The left rail. Sticky and scrolling under the header at `lg`; a sheet
 /// behind the ☰ below it.
 pub fn Sidebar(items: &[SidebarItem]) -> Element {
-    <aside id="docs-sidebar"
+    <aside id="docs-sidebar" data-sidebar
            class="docs-sidebar p-6 lg:sticky lg:top-14 lg:max-h-[calc(100dvh-56px)] lg:overflow-y-auto">
         <nav aria-label="Documentation">
             for group in nav_groups(items) {
-                <div class="mt-8 first:mt-0" style={depth_style(group.depth)}>
+                <div class="docs-nav-group mt-8 first:mt-0" style={depth_style(group.depth)}>
                     if let Some(label) = group.label {
                         <h2 class="font-mono text-xs leading-6 font-medium uppercase tracking-[0.1em] text-ink-soft">
                             {label}
@@ -382,8 +378,20 @@ fn crumb_class(index: usize, len: usize) -> &'static str {
     }
 }
 
+/// The repository link, which the header shows as the GitHub mark. Every
+/// other anchor keeps its words: three identical marks would say nothing.
 fn is_github(link: &Link) -> bool {
-    link.label.eq_ignore_ascii_case("github") || link.url.contains("github.com")
+    link.label.eq_ignore_ascii_case("github") || link.label.eq_ignore_ascii_case("source")
+}
+
+/// The mark is small enough to keep at every width; a worded anchor is not,
+/// so it stands down below `sm` where the header has no room for it.
+fn anchor_class(link: &Link) -> &'static str {
+    if is_github(link) {
+        "flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink"
+    } else {
+        "hidden items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] text-ink-soft transition-colors hover:text-ink lg:flex"
+    }
 }
 
 fn anchor_href(id: &str) -> String {

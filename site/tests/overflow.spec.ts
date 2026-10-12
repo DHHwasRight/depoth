@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { documentOverflow, ROUTES, viewport, WIDTHS } from '../playwright.config';
+import { expect, test, type Locator } from '@playwright/test';
+import { documentOverflow, ROUTES, viewport, WIDTHS } from './shell.spec';
 
 /**
  * Wide content scrolls inside its own box.
@@ -11,8 +11,8 @@ import { documentOverflow, ROUTES, viewport, WIDTHS } from '../playwright.config
 
 type Measurement = { scrollWidth: number; clientWidth: number; overflowX: string; text: string };
 
-async function measure(locator: ReturnType<typeof test.step> extends never ? never : any): Promise<Measurement[]> {
-  return locator.evaluateAll((nodes: HTMLElement[]) =>
+async function measure(locator: Locator): Promise<Measurement[]> {
+  return locator.evaluateAll((nodes) =>
     nodes.map((node) => ({
       scrollWidth: node.scrollWidth,
       clientWidth: node.clientWidth,

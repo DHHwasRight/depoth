@@ -7,7 +7,7 @@ import {
   ROUTES,
   viewport,
   WIDTHS,
-} from '../playwright.config';
+} from './shell.spec';
 
 /**
  * The three-column shell, at the widths where it changes shape.

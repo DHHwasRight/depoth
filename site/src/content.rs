@@ -36,6 +36,12 @@ pub enum LoadError {
     Missing { slug: String, path: String },
 }
 
+/// The prefix every absolute URL carries, empty unless the site is deployed
+/// under a sub-path. Set at compile time by `build.rs`.
+pub fn base_path() -> &'static str {
+    env!("DEPOTH_BASE")
+}
+
 /// Reads every `.md` under `root`, keyed by slug.
 pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
     let mut docs = BTreeMap::new();
@@ -67,7 +73,7 @@ pub fn load(root: &Path) -> Result<BTreeMap<String, Doc>, LoadError> {
             docs.insert(
                 slug.clone(),
                 Doc {
-                    url: format!("/{slug}"),
+                    url: format!("{}/{slug}", base_path()),
                     slug,
                     title: front.title,
                     description: front.description,
@@ -110,9 +116,9 @@ pub fn chrome_for(
                 Some(href) => href.clone(),
                 None => entries
                     .iter()
-                    .find(|e| e.tab.as_deref() == Some(&t.tab))
-                    .map(|e| format!("/{}", e.slug))
-                    .unwrap_or_else(|| "/".into()),
+                    .find(|e| e.tab.as_deref() == Some(t.tab.as_str()))
+                    .map(|e| format!("{}/{}", base_path(), e.slug))
+                    .unwrap_or_else(|| format!("{}/", base_path())),
             },
             current: Some(&t.tab) == tab_here.as_ref(),
             external: t.href.is_some(),

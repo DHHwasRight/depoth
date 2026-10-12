@@ -1,1 +1,111 @@
-/* landing.css — placeholder, owned by another agent. */
+/* The landing page.
+ *
+ * Layout and spacing are Tailwind utilities in `src/views/landing.rsx`. Only
+ * three things live here, because a utility cannot say them: the dot scrim
+ * over the hero wash, the fog ellipse that keeps the headline readable on top
+ * of it, and the per-group hover glow.
+ *
+ * Every colour is a token from `theme.css`, and every token used here is also
+ * reached by a utility in the markup, so Tailwind emits the variable this
+ * file depends on. No raw hex appears below.
+ *
+ * Nothing is defined only inside a media query: each colour has its value on
+ * the plain selector, and the theme flips underneath it because every token
+ * is redefined by `theme.css` in all three states.
+ */
+
+/* ------------------------------------------------------------- the hero wash
+ *
+ * Two layers, in paint order from the top: a sheet of the page ground with a
+ * 1.5px hole every 14px, and the wash itself. The wash is therefore visible
+ * only through the holes, which is what makes it read as a scrim rather than
+ * a panel. The wash fades out before the sheet does, so the dots end by
+ * disappearing instead of by stopping at a line.
+ *
+ * The hue is the accent. It is the field the primary button sits in, so it is
+ * interaction's own colour; no card group may use it.
+ */
+.hero-wash {
+  --hero-tint: color-mix(in oklab, var(--color-accent) 14%, var(--color-ground));
+
+  position: absolute;
+  inset-inline: 0;
+  top: -120px;
+  z-index: -1;
+  height: 400px;
+  pointer-events: none;
+  background-image:
+    radial-gradient(transparent 1.5px, var(--color-ground) 1px),
+    linear-gradient(to bottom, var(--hero-tint), transparent 86%);
+  background-size:
+    14px 14px,
+    100% 100%;
+  background-repeat: repeat, no-repeat;
+}
+
+/* ------------------------------------------------------------ the fog ellipse
+ *
+ * Not a box and not a card: a soft hole burned through the scrim, so the
+ * headline sits on something near enough to the page ground to stay legible
+ * while the wash continues around it. The shadow does the work — it is the
+ * same colour as the fill, blurred and spread far enough to have no edge.
+ */
+.hero-fog {
+  position: absolute;
+  inset: -12% -6% auto -6%;
+  z-index: 0;
+  height: 80%;
+  pointer-events: none;
+  border-radius: 100% / 85%;
+  background: color-mix(in oklab, var(--color-ground) 75%, transparent);
+  box-shadow: 0 0 64px 64px color-mix(in oklab, var(--color-ground) 75%, transparent);
+}
+
+/* ------------------------------------------------------------ the group glows
+ *
+ * One hue per group and nowhere else on the page. Each group hands its cards
+ * two tones of its own hue; the card paints them as one glow from the top
+ * left and one from the bottom right, which is what gives the hover its
+ * depth rather than a flat halo.
+ *
+ * Both tones are mixed down from the hue's `-base` — the one step that also
+ * draws the group's hairline — so a group needs exactly one token, and the
+ * mix to `transparent` keeps the glow correct on a dark ground as well as a
+ * light one.
+ */
+.g-mint {
+  --glow-a: color-mix(in oklab, var(--color-mint-base) 20%, transparent);
+  --glow-b: color-mix(in oklab, var(--color-mint-base) 34%, transparent);
+}
+
+.g-lilac {
+  --glow-a: color-mix(in oklab, var(--color-lilac-base) 20%, transparent);
+  --glow-b: color-mix(in oklab, var(--color-lilac-base) 34%, transparent);
+}
+
+.g-peach {
+  --glow-a: color-mix(in oklab, var(--color-peach-base) 20%, transparent);
+  --glow-b: color-mix(in oklab, var(--color-peach-base) 34%, transparent);
+}
+
+.g-orchid {
+  --glow-a: color-mix(in oklab, var(--color-orchid-base) 20%, transparent);
+  --glow-b: color-mix(in oklab, var(--color-orchid-base) 34%, transparent);
+}
+
+.doc-card {
+  transition: box-shadow 160ms ease;
+}
+
+.doc-card:hover,
+.doc-card:focus-visible {
+  box-shadow:
+    var(--glow-a) -6px -6px 42px 8px,
+    var(--glow-b) 6px 6px 42px 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-card {
+    transition: none;
+  }
+}

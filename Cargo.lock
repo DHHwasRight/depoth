@@ -1852,7 +1852,7 @@ checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
 [[package]]
 name = "prerender"
 version = "0.1.0"
-source = "git+https://github.com/DHHwasRight/prerender.git?branch=main#4ddc49b7f5a5db52b8af1e15e0e5f5e0c0d48e72"
+source = "git+https://github.com/DHHwasRight/prerender.git?branch=main#160b54ad6970d2d3dbad904bc6ad4b86d36e46f5"
 dependencies = [
  "anyhow",
  "clap",
