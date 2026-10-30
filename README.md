@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/DHHwasRight/.github/main/profile/logo.png" width="96" alt="">
-</p>
-
 <h1 align="center">depoth</h1>
 
 <p align="center">A static content framework in Rust. Templates compile; content does not.</p>
